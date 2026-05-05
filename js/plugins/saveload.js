@@ -110,6 +110,12 @@
 
     const screenshotStorage = {};
 
+    function captureScreenshot(slotId) {
+
+    screenshotStorage[slotId] =
+        window.vnPauseScreenshot;
+}
+
     //==================================================
     // SAVE INFO
     //==================================================
@@ -130,16 +136,6 @@
 
         return info;
     };
-
-    //==================================================
-    // SCREENSHOT
-    //==================================================
-
-    function captureScreenshot(slotId) {
-
-        screenshotStorage[slotId] =
-            SceneManager.snap();
-    }
 
     //==================================================
     // BASE
@@ -382,7 +378,7 @@
             if (info) {
 
                 textBitmap.drawText(
-                    "Arquivo " + slotId,
+                    "Save " + slotId,
                     0,
                     0,
                     200,
@@ -716,7 +712,7 @@
 
         sceneTitle() {
 
-            return "Qual arquivo deseja carregar?";
+            return "Qual save deseja carregar?";
         }
 
         onSlotClick(slotId) {
@@ -745,14 +741,14 @@
     // GLOBAL
     //==================================================
 
-    window.openVNSave = function() {
+    self.openVNSave = function() {
 
         SceneManager.push(
             Scene_VNSave
         );
     };
 
-    window.openVNLoad = function() {
+    self.openVNLoad = function() {
 
         SceneManager.push(
             Scene_VNLoad

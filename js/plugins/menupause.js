@@ -1,10 +1,6 @@
 /*:
  * @target MZ
- *
- * @param textboxPictureId
- * @text ID da Picture da Caixa de Texto
- * @type number
- * @default 20
+ * @plugindesc Adiciona um menu de pausa customizável.
  *
  * @param menuBackground
  * @text Fundo do Menu
@@ -21,7 +17,7 @@
  * @param fontSize
  * @text Tamanho da Fonte
  * @type number
- * @default 34
+ * @default 26
  *
  * @param fontFace
  * @text Fonte
@@ -77,9 +73,6 @@
     const params =
         PluginManager.parameters(pluginName);
 
-    const TEXTBOX_PICTURE_ID =
-        Number(params.textboxPictureId || 20);
-
     const MENU_BACKGROUND =
         String(params.menuBackground || "pause_bg");
 
@@ -87,7 +80,7 @@
         String(params.buttonBackground || "btn_bg");
 
     const FONT_SIZE =
-        Number(params.fontSize || 34);
+        Number(params.fontSize || 26);
 
     const FONT_FACE =
         String(params.fontFace || "rmmz-mainfont");
@@ -149,7 +142,6 @@
 
         this.createBackground();
         this.createTitle();
-        this.hideVNText();
         this.createButtons();
     };
 
@@ -202,82 +194,6 @@
         this.addChild(sprite);
     };
 
-    //==================================================
-    // ESCONDER TEXTO
-    //==================================================
-
-    Scene_CustomPause.prototype.hideVNText =
-        function() {
-
-        const scene =
-            SceneManager._previousScene;
-
-        if (scene && scene._messageWindow) {
-
-            scene._messageWindow.contentsOpacity = 0;
-
-            if (
-                scene._messageWindow._nameBoxWindow
-            ) {
-
-                scene._messageWindow
-                    ._nameBoxWindow
-                    .contentsOpacity = 0;
-            }
-        }
-
-        const picture =
-            $gameScreen.picture(
-                TEXTBOX_PICTURE_ID
-            );
-
-        if (picture) {
-
-            picture._pauseOpacityBackup =
-                picture.opacity();
-
-            picture._opacity = 0;
-        }
-    };
-
-    //==================================================
-    // RESTAURAR TEXTO
-    //==================================================
-
-    Scene_CustomPause.prototype.restoreVNText =
-        function() {
-
-        const scene =
-            SceneManager._previousScene;
-
-        if (scene && scene._messageWindow) {
-
-            scene._messageWindow.contentsOpacity = 255;
-
-            if (
-                scene._messageWindow._nameBoxWindow
-            ) {
-
-                scene._messageWindow
-                    ._nameBoxWindow
-                    .contentsOpacity = 255;
-            }
-        }
-
-        const picture =
-            $gameScreen.picture(
-                TEXTBOX_PICTURE_ID
-            );
-
-        if (
-            picture &&
-            picture._pauseOpacityBackup !== undefined
-        ) {
-
-            picture._opacity =
-                picture._pauseOpacityBackup;
-        }
-    };
 
     //==================================================
     // BOTÕES
@@ -542,8 +458,6 @@
     Scene_CustomPause.prototype.commandTitle =
         function() {
 
-        this.restoreVNText();
-
         $gameScreen.clearPictures();
 
         $gamePlayer.reserveTransfer(
@@ -564,8 +478,6 @@
     Scene_CustomPause.prototype.commandResume =
         function() {
 
-        this.restoreVNText();
-
         SceneManager.pop();
     };
 
@@ -585,6 +497,9 @@
 
             window._pauseMenuRequested =
                 false;
+
+            window.vnPauseScreenshot =
+                SceneManager.snap(); 
 
             SceneManager.push(
                 Scene_CustomPause
