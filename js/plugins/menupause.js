@@ -456,20 +456,26 @@
     //==================================================
 
     Scene_CustomPause.prototype.commandTitle =
-        function() {
+    function() {
 
-        $gameScreen.clearPictures();
+    // Limpa imagens da tela
+    $gameScreen.clearPictures();
 
-        $gamePlayer.reserveTransfer(
-            TITLE_MAP_ID,
-            TITLE_MAP_X,
-            TITLE_MAP_Y,
-            2,
-            0
-        );
+    // Reinicia o jogo corretamente
+    DataManager.setupNewGame();
 
-        SceneManager.goto(Scene_Map);
-    };
+    // Teleporta para o mapa da tela inicial
+    $gamePlayer.reserveTransfer(
+        TITLE_MAP_ID,
+        TITLE_MAP_X,
+        TITLE_MAP_Y,
+        2,
+        0
+    );
+
+    // Vai para o mapa
+    SceneManager.goto(Scene_Map);
+};
 
     //==================================================
     // RESUME

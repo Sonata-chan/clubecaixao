@@ -105,16 +105,19 @@
     const SLOT_HEIGHT = 200;
 
     //==================================================
-    // SCREENSHOT STORAGE
+    // SCREENSHOT
     //==================================================
 
-    const screenshotStorage = {};
+    function makeScreenshotData() {
 
-    function captureScreenshot(slotId) {
+        if (!window.vnPauseScreenshot) {
+            return null;
+        }
 
-    screenshotStorage[slotId] =
-        window.vnPauseScreenshot;
-}
+        return window.vnPauseScreenshot
+            .canvas
+            .toDataURL("image/png");
+    }
 
     //==================================================
     // SAVE INFO
@@ -133,6 +136,9 @@
             $gameVariables.value(
                 DAY_VARIABLE_ID
             );
+
+        info.vnScreenshot =
+            makeScreenshotData();
 
         return info;
     };
@@ -329,42 +335,46 @@
                 screenshot
             );
 
+            const info =
+                DataManager.savefileInfo(
+                    slotId
+                );
+
             if (
-                screenshotStorage[slotId]
+                info &&
+                info.vnScreenshot
             ) {
 
                 const bmp =
-                    screenshotStorage[
-                        slotId
-                    ];
+                    Bitmap.load(
+                        info.vnScreenshot
+                    );
 
-                screenshot.bitmap =
-                    new Bitmap(
+                bmp.addLoadListener(() => {
+
+                    screenshot.bitmap =
+                        new Bitmap(
+                            190,
+                            108
+                        );
+
+                    screenshot.bitmap.blt(
+                        bmp,
+                        0,
+                        0,
+                        bmp.width,
+                        bmp.height,
+                        0,
+                        0,
                         190,
                         108
                     );
-
-                screenshot.bitmap.blt(
-                    bmp,
-                    0,
-                    0,
-                    bmp.width,
-                    bmp.height,
-                    0,
-                    0,
-                    190,
-                    108
-                );
+                });
             }
 
             //==========================================
             // TEXT
             //==========================================
-
-            const info =
-                DataManager.savefileInfo(
-                    slotId
-                );
 
             const textBitmap =
                 new Bitmap(200, 160);
@@ -688,10 +698,6 @@
         }
 
         onSlotClick(slotId) {
-
-            captureScreenshot(
-                slotId
-            );
 
             DataManager.saveGame(
                 slotId
