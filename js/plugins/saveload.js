@@ -26,6 +26,12 @@
  * @dir img/pictures/
  * @default save_close
  *
+ * @param closeButtonHoverImage
+ * @text Hover Botão Fechar
+ * @type file
+ * @dir img/pictures/
+ * @default save_close_hover
+ * 
  * @param nextButtonImage
  * @text Próxima Página
  * @type file
@@ -79,6 +85,9 @@
     const CLOSE_IMAGE =
         String(params.closeButtonImage);
 
+    const CLOSE_HOVER_IMAGE =
+        String(params.closeButtonHoverImage);
+
     const NEXT_IMAGE =
         String(params.nextButtonImage);
 
@@ -93,6 +102,13 @@
 
     const DAY_VARIABLE_ID =
         Number(params.dayVariableId);
+
+
+    //==================================================
+    // GLOBAL FLAGS
+    //==================================================
+
+    let openedFromTitle = false;
 
     //==================================================
     // CONFIG
@@ -580,22 +596,49 @@
 
         createCloseButton() {
 
-            this._closeButton =
-                new Sprite(
-                    ImageManager.loadPicture(
-                        CLOSE_IMAGE
-                    )
-                );
+    //==========================================
+    // NORMAL
+    //==========================================
 
-            this._closeButton.x =
-                Graphics.boxWidth - 72;
+    this._closeButton =
+        new Sprite(
+            ImageManager.loadPicture(
+                CLOSE_IMAGE
+            )
+        );
 
-            this._closeButton.y = 18;
+    this._closeButton.x =
+        Graphics.boxWidth - 72;
 
-            this.addChild(
-                this._closeButton
-            );
-        }
+    this._closeButton.y = 18;
+
+    this.addChild(
+        this._closeButton
+    );
+
+    //==========================================
+    // HOVER
+    //==========================================
+
+    this._closeButtonHover =
+        new Sprite(
+            ImageManager.loadPicture(
+                CLOSE_HOVER_IMAGE
+            )
+        );
+
+    this._closeButtonHover.x =
+        this._closeButton.x;
+
+    this._closeButtonHover.y =
+        this._closeButton.y;
+
+    this._closeButtonHover.opacity = 0;
+
+    this.addChild(
+        this._closeButtonHover
+    );
+}
 
         //==============================================
         // UPDATE
@@ -614,13 +657,7 @@
 
         updateButtons() {
 
-            this.updateButton(
-                this._closeButton,
-                () => {
-
-                    SceneManager.pop();
-                }
-            );
+            this.updateCloseButton();
 
             this.updateButton(
                 this._nextButton,
@@ -683,6 +720,68 @@
                 callback();
             }
         }
+
+        updateCloseButton() {
+
+    const sprite =
+        this._closeButton;
+
+    const hover =
+        this._closeButtonHover;
+
+    const hovered =
+        TouchInput.x >= sprite.x &&
+        TouchInput.x <=
+        sprite.x + sprite.width &&
+        TouchInput.y >= sprite.y &&
+        TouchInput.y <=
+        sprite.y + sprite.height;
+
+    //==========================================
+    // HOVER
+    //==========================================
+
+    hover.opacity =
+        hovered ? 255 : 0;
+
+    //==========================================
+    // SCALE
+    //==========================================
+
+    sprite.scale.x =
+        hovered ? 1.05 : 1;
+
+    sprite.scale.y =
+        hovered ? 1.05 : 1;
+
+    hover.scale.x =
+        sprite.scale.x;
+
+    hover.scale.y =
+        sprite.scale.y;
+
+    //==========================================
+    // CLICK
+    //==========================================
+
+    if (
+        hovered &&
+        TouchInput.isTriggered()
+    ) {
+
+        sprite.visible = false;
+        hover.visible = false;
+
+        Graphics.app.render();
+
+        $gameScreen.tintPicture(90, [0,0,0,0], 0);
+        $gameScreen.tintPicture(91, [0, 0, 0, 0], 0);
+
+        SceneManager.pop();
+        
+    }
+    
+    }
     }
 
     //==================================================
@@ -741,6 +840,8 @@
                 Scene_Map
             );
         }
+
+        
     }
 
     //==================================================
@@ -757,8 +858,10 @@
     self.openVNLoad = function() {
 
         SceneManager.push(
-            Scene_VNLoad
+        Scene_VNLoad
         );
     };
 
+
+    
 })();

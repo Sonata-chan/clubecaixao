@@ -58,6 +58,33 @@
  * @text Y do Mapa do Título
  * @type number
  * @default 10
+ * 
+ * @param pauseButtonImage
+ * @text Imagem do Botão Pause
+ * @type file
+ * @dir img/pictures/
+ * @default botao_menu
+ *
+ * @param pauseButtonHoverImage
+ * @text Hover do Botão Pause
+ * @type file
+ * @dir img/pictures/
+ * @default botao_menu_hover
+ *
+ * @param pauseButtonX
+ * @text Botão X
+ * @type number
+ * @default 744
+ *
+ * @param pauseButtonY
+ * @text Botão Y
+ * @type number
+ * @default 24
+ * 
+ * @param pauseButtonSwitch
+ * @text Switch do Botão
+ * @type switch
+ * @default 1
  */
 
 (() => {
@@ -105,6 +132,21 @@
 
     const TITLE_MAP_Y =
         Number(params.titleMapY || 10);
+    
+    const PAUSE_BUTTON_IMAGE =
+        String(params.pauseButtonImage);
+
+    const PAUSE_BUTTON_HOVER =
+        String(params.pauseButtonHoverImage);
+
+    const PAUSE_BUTTON_X =
+        Number(params.pauseButtonX);
+
+    const PAUSE_BUTTON_Y =
+        Number(params.pauseButtonY);    
+
+    const PAUSE_BUTTON_SWITCH =
+        Number(params.pauseButtonSwitch);
 
     //==================================================
     // REQUEST
@@ -387,7 +429,8 @@
 
     Scene_CustomPause.prototype.commandSave =
         function() {
-
+        
+        openedFromTitle = false;
         openVNSave();
     };
 
@@ -397,7 +440,8 @@
 
     Scene_CustomPause.prototype.commandLoad =
         function() {
-
+            
+        openedFromTitle = false;
         openVNLoad();
     };
 
@@ -533,4 +577,153 @@
         _Game_Map_updateInterpreter.call(this);
     };
 
+//==================================================
+// MAP PAUSE BUTTON
+//==================================================
+
+const _VNPause_CreateAllWindows =
+    Scene_Map.prototype.createAllWindows;
+
+Scene_Map.prototype.createAllWindows =
+    function() {
+
+    _VNPause_CreateAllWindows.call(this);
+
+    this.createPauseMenuButton();
+};
+
+Scene_Map.prototype.createPauseMenuButton =
+    function() {
+
+    this._pauseButtonContainer =
+        new Sprite();
+
+    this._pauseButtonContainer.x =
+        PAUSE_BUTTON_X;
+
+    this._pauseButtonContainer.y =
+        PAUSE_BUTTON_Y;
+
+    //==============================================
+    // NORMAL
+    //==============================================
+
+    const normal =
+        new Sprite(
+            ImageManager.loadPicture(
+                PAUSE_BUTTON_IMAGE
+            )
+        );
+
+    this._pauseButtonContainer
+        .addChild(normal);
+
+    //==============================================
+    // HOVER
+    //==============================================
+
+    const hover =
+        new Sprite(
+            ImageManager.loadPicture(
+                PAUSE_BUTTON_HOVER
+            )
+        );
+
+    hover.opacity = 0;
+
+    this._pauseButtonContainer
+        .addChild(hover);
+
+    this._pauseHoverSprite =
+        hover;
+
+    this.addChild(
+        this._pauseButtonContainer
+    );
+};
+
+//==================================================
+// UPDATE
+//==================================================
+
+const _VNPause_SceneMap_Update =
+    Scene_Map.prototype.update;
+
+Scene_Map.prototype.update =
+    function() {
+
+    _VNPause_SceneMap_Update.call(this);
+
+    this.updatePauseMenuButton();
+};
+
+Scene_Map.prototype.updatePauseMenuButton =
+    function() {
+
+    if (!this._pauseButtonContainer) {
+        return;
+    }
+
+    //==============================================
+    // VISIBILIDADE
+    //==============================================
+
+    const enabled =
+    $gameSwitches.value(
+        PAUSE_BUTTON_SWITCH
+    );
+
+    if (enabled) {
+
+    this._pauseButtonContainer.opacity += 20;
+
+    } else {
+
+    this._pauseButtonContainer.opacity -= 20;
+    }
+
+    this._pauseButtonContainer.opacity =
+    this._pauseButtonContainer.opacity
+    .clamp(0, 255);
+
+// Não deixa clicar invisível
+    if (
+    this._pauseButtonContainer.opacity <= 0
+    ) {
+    return;
+    }
+
+    const sprite =
+        this._pauseButtonContainer;
+
+    const width =
+        sprite.getBounds().width;
+
+    const height =
+        sprite.getBounds().height;
+
+    const hovered =
+        TouchInput.x >= sprite.x &&
+        TouchInput.x <= sprite.x + width &&
+        TouchInput.y >= sprite.y &&
+        TouchInput.y <= sprite.y + height;
+
+    this._pauseHoverSprite.opacity =
+        hovered ? 255 : 0;
+
+    sprite.scale.x =
+        hovered ? 1.03 : 1;
+
+    sprite.scale.y =
+        hovered ? 1.03 : 1;
+
+    if (
+        hovered &&
+        TouchInput.isTriggered()
+    ) {
+
+        openCustomPauseMenu();
+    }
+};
+    
 })();
