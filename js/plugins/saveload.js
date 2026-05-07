@@ -102,14 +102,7 @@
 
     const DAY_VARIABLE_ID =
         Number(params.dayVariableId);
-
-
-    //==================================================
-    // GLOBAL FLAGS
-    //==================================================
-
-    let openedFromTitle = false;
-
+    
     //==================================================
     // CONFIG
     //==================================================
@@ -159,6 +152,14 @@
         return info;
     };
 
+
+    //==================================================
+    // OPEN ORIGIN
+    //==================================================
+
+    window._vnFileOpenedFromTitle = false;
+
+    
     //==================================================
     // BASE
     //==================================================
@@ -774,11 +775,16 @@
 
         Graphics.app.render();
 
-        $gameScreen.tintPicture(90, [0,0,0,0], 0);
-        $gameScreen.tintPicture(91, [0, 0, 0, 0], 0);
+    if (window._vnFileOpenedFromTitle) {
+
+        SceneManager.goto(
+            Scene_Title
+        );
+
+        } else {
 
         SceneManager.pop();
-        
+        }
     }
     
     }
@@ -804,7 +810,16 @@
 
             SoundManager.playSave();
 
-            SceneManager.pop();
+            if (window._vnFileOpenedFromTitle) {
+
+        SceneManager.goto(
+            Scene_Title
+        );
+
+    } else {
+
+        SceneManager.pop();
+    }
         }
     }
 
@@ -848,16 +863,22 @@
     // GLOBAL
     //==================================================
 
-    self.openVNSave = function() {
+    self.openVNSave = function(fromTitle = false) {
 
-        SceneManager.push(
-            Scene_VNSave
+    window._vnFileOpenedFromTitle =
+        fromTitle;
+
+    SceneManager.push(
+        Scene_VNSave
         );
     };
 
-    self.openVNLoad = function() {
+    self.openVNLoad = function(fromTitle = false) {
 
-        SceneManager.push(
+    window._vnFileOpenedFromTitle =
+        fromTitle;
+
+    SceneManager.push(
         Scene_VNLoad
         );
     };

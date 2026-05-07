@@ -43,21 +43,6 @@
  * @text Offset Vertical do Título
  * @type number
  * @default -260
- *
- * @param titleMapId
- * @text ID do Mapa do Título
- * @type number
- * @default 1
- *
- * @param titleMapX
- * @text X do Mapa do Título
- * @type number
- * @default 10
- *
- * @param titleMapY
- * @text Y do Mapa do Título
- * @type number
- * @default 10
  * 
  * @param pauseButtonImage
  * @text Imagem do Botão Pause
@@ -123,15 +108,6 @@
 
     const TITLE_OFFSET_Y =
         Number(params.titleOffsetY || -260);
-
-    const TITLE_MAP_ID =
-        Number(params.titleMapId || 1);
-
-    const TITLE_MAP_X =
-        Number(params.titleMapX || 10);
-
-    const TITLE_MAP_Y =
-        Number(params.titleMapY || 10);
     
     const PAUSE_BUTTON_IMAGE =
         String(params.pauseButtonImage);
@@ -430,9 +406,8 @@
     Scene_CustomPause.prototype.commandSave =
         function() {
         
-        openedFromTitle = false;
-        openVNSave();
-    };
+            openVNSave();
+        };
 
     //==================================================
     // LOAD
@@ -441,9 +416,8 @@
     Scene_CustomPause.prototype.commandLoad =
         function() {
             
-        openedFromTitle = false;
-        openVNLoad();
-    };
+            openVNLoad();
+        };
 
     //==================================================
     // SOUND
@@ -502,23 +476,15 @@
     Scene_CustomPause.prototype.commandTitle =
     function() {
 
-    // Limpa imagens da tela
+    // limpa screenshots antigas
+    window.vnPauseScreenshot = null;
+
+    // limpa imagens
     $gameScreen.clearPictures();
 
-    // Reinicia o jogo corretamente
-    DataManager.setupNewGame();
+    // volta para a tela inicial nativa
+    SceneManager.goto(Scene_Title);
 
-    // Teleporta para o mapa da tela inicial
-    $gamePlayer.reserveTransfer(
-        TITLE_MAP_ID,
-        TITLE_MAP_X,
-        TITLE_MAP_Y,
-        2,
-        0
-    );
-
-    // Vai para o mapa
-    SceneManager.goto(Scene_Map);
 };
 
     //==================================================
