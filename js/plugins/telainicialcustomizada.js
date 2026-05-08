@@ -101,44 +101,56 @@
         Scene_Title.prototype.create;
 
     Scene_Title.prototype.create =
-        function() {
+    function() {
 
-        _Scene_Title_create.call(this);
+    _Scene_Title_create.call(this);
 
-        this.removeDefaultTitleStuff();
+    //==============================================
+    // REMOVE VISUAIS PADRÃO
+    //==============================================
 
-        this.createCustomBackground();
+    if (this._backSprite1) {
+        this._backSprite1.visible = false;
+    }
 
-        this.createVNButtons();
+    if (this._backSprite2) {
+        this._backSprite2.visible = false;
+    }
+
+    if (this._foregroundSprite) {
+        this._foregroundSprite.visible = false;
+    }
+
+    //==============================================
+    // FUNDO CUSTOM
+    //==============================================
+
+    this.createCustomBackground();
+
+    //==============================================
+    // BOTÕES CUSTOM
+    //==============================================
+
+    this.createVNButtons();
+    
     };
 
     //==================================================
-    // REMOVE DEFAULT
+    // DISABLE DEFAULT TITLE UPDATES
     //==================================================
 
-    Scene_Title.prototype.removeDefaultTitleStuff =
+    Scene_Title.prototype.update =
         function() {
 
-        if (this._backSprite1) {
-            this.removeChild(this._backSprite1);
-        }
+        Scene_Base.prototype.update.call(this);
 
-        if (this._backSprite2) {
-            this.removeChild(this._backSprite2);
-        }
+        this.updateVNButtons();
+    };
 
-        if (this._foregroundSprite) {
-            this.removeChild(this._foregroundSprite);
-        }
+    Scene_Title.prototype.isBusy =
+        function() {
 
-        if (this._commandWindow) {
-
-            this._commandWindow.close();
-
-            this.removeChild(
-                this._commandWindow
-            );
-        }
+        return false;
     };
 
     //==================================================
