@@ -125,7 +125,7 @@
 
         return window.vnPauseScreenshot
             .canvas
-            .toDataURL("image/png");
+            .toDataURL("image/jpeg", 0.6);
     }
 
     //==================================================
@@ -178,6 +178,16 @@
             this.createSlots();
             this.createBottomUI();
             this.createCloseButton();
+        }
+
+        start() {
+
+            super.start();
+
+            window._vnInputBlockTimer = 10;
+
+            TouchInput.clear();
+            Input.clear();
         }
 
         //==============================================
@@ -765,26 +775,20 @@
     // CLICK
     //==========================================
 
-    if (
+        if (
         hovered &&
         TouchInput.isTriggered()
-    ) {
+        ) {
+
+        TouchInput.clear();
+        Input.clear();
 
         sprite.visible = false;
         hover.visible = false;
 
         Graphics.app.render();
 
-    if (window._vnFileOpenedFromTitle) {
-
-        SceneManager.goto(
-            Scene_Title
-        );
-
-        } else {
-
-        SceneManager.pop();
-        }
+        this.onClose();
     }
     
     }
@@ -794,70 +798,96 @@
     // SAVE
     //==================================================
 
-    class Scene_VNSave
-        extends Scene_VNFile {
+class Scene_VNSave
+    extends Scene_VNFile {
 
-        sceneTitle() {
+    sceneTitle() {
 
-            return "Onde deseja salvar?";
-        }
+        return "Onde deseja salvar?";
+    }
 
-        onSlotClick(slotId) {
+    onClose() {
 
-            DataManager.saveGame(
-                slotId
-            );
+        TouchInput.clear();
+        Input.clear();
 
-            SoundManager.playSave();
-
-            if (window._vnFileOpenedFromTitle) {
-
-        SceneManager.goto(
-            Scene_Title
-        );
-
-    } else {
-
+        // Save SEMPRE volta pro menu pause
         SceneManager.pop();
     }
+
+    onSlotClick(slotId) {
+
+        DataManager.saveGame(slotId)
+        .then(() => {
+
+        SoundManager.playSave();
+
+        SceneManager.pop();
+        });
+    }
+}
+
+//==================================================
+// LOAD
+//==================================================
+
+class Scene_VNLoad
+    extends Scene_VNFile {
+
+    sceneTitle() {
+
+        return "Qual save deseja carregar?";
+    }
+
+    onClose() {
+
+        TouchInput.clear();
+        Input.clear();
+
+        //==========================================
+        // SE VEIO DA TITLE
+        //==========================================
+
+        if (window._vnFileOpenedFromTitle) {
+
+            window._vnFileOpenedFromTitle = false;
+
+            SceneManager.goto(Scene_Title);
+
+        //==========================================
+        // SE VEIO DO PAUSE
+        //==========================================
+
+        } else {
+
+            SceneManager.pop();
         }
     }
 
-    //==================================================
-    // LOAD
-    //==================================================
+    onSlotClick(slotId) {
 
-    class Scene_VNLoad
-        extends Scene_VNFile {
-
-        sceneTitle() {
-
-            return "Qual save deseja carregar?";
+        if (
+            !DataManager.savefileExists(slotId)
+        ) {
+            return;
         }
 
-        onSlotClick(slotId) {
+        SoundManager.playLoad();
 
-            if (
-                !DataManager.savefileExists(
-                    slotId
-                )
-            ) {
-                return;
-            }
+        // limpa flag
+        window._vnFileOpenedFromTitle = false;
 
-            SoundManager.playLoad();
+        TouchInput.clear();
+        Input.clear();
 
-            DataManager.loadGame(
-                slotId
-            );
+        DataManager.loadGame(slotId)
+        .then(() => {
 
-            SceneManager.goto(
-                Scene_Map
-            );
-        }
+            SceneManager.goto(Scene_Map);
 
-        
+        });
     }
+}
 
     //==================================================
     // GLOBAL

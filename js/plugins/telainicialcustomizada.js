@@ -139,14 +139,6 @@
     // DISABLE DEFAULT TITLE UPDATES
     //==================================================
 
-    Scene_Title.prototype.update =
-        function() {
-
-        Scene_Base.prototype.update.call(this);
-
-        this.updateVNButtons();
-    };
-
     Scene_Title.prototype.isBusy =
         function() {
 
