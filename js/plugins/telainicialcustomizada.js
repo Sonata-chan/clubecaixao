@@ -93,6 +93,8 @@
     const LOAD_Y =
         Number(params.loadGameY);
 
+    const TITLE_INPUT_BLOCK_FRAMES = 18;
+
     //==================================================
     // CREATE
     //==================================================
@@ -132,7 +134,39 @@
     //==============================================
 
     this.createVNButtons();
+
+    // Evita clique herdado da cena anterior ao entrar na title.
+    this._vnInputBlockFrames =
+        Number(window._vnTitleInputBlockFrames || TITLE_INPUT_BLOCK_FRAMES);
+
+    this._vnInputArmed = false;
+
+    window._vnTitleInputBlockFrames = 0;
+
+    TouchInput.clear();
+    Input.clear();
+
+    if (this._commandWindow) {
+
+        this._commandWindow.deactivate();
+        this._commandWindow.close();
+        this._commandWindow.hide();
+    }
     
+    };
+
+    Scene_Title.prototype.start =
+        function() {
+
+        Scene_Base.prototype.start.call(this);
+
+        SceneManager.clearStack();
+        this.adjustBackground();
+        this.playTitleMusic();
+        this.startFadeIn(this.fadeSpeed(), false);
+
+        TouchInput.clear();
+        Input.clear();
     };
 
     //==================================================
@@ -289,9 +323,34 @@
     Scene_Title.prototype.update =
         function() {
 
-        _Scene_Title_update.call(this);
+        Scene_Base.prototype.update.call(this);
+
+        if (this._vnInputBlockFrames > 0) {
+            this._vnInputBlockFrames--;
+        }
 
         this.updateVNButtons();
+    };
+
+    Scene_Title.prototype.canProcessVNClick =
+        function() {
+
+        if (this._vnInputBlockFrames > 0) {
+            return false;
+        }
+
+        if (TouchInput.isPressed()) {
+            return false;
+        }
+
+        if (!this._vnInputArmed) {
+
+            this._vnInputArmed = true;
+
+            return false;
+        }
+
+        return true;
     };
 
     //==================================================
@@ -304,6 +363,9 @@
         if (!this._vnButtons) {
             return;
         }
+
+        const canClick =
+            this.canProcessVNClick();
 
         const mx =
             TouchInput.x;
@@ -350,6 +412,7 @@
 
             if (
                 hovered &&
+                canClick &&
                 TouchInput.isClicked()
             ) {
 

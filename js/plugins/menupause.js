@@ -522,6 +522,7 @@ function() {
         window.vnPauseScreenshot = null;
         window._vnPauseMenuActive = false;
         window._vnFileOpenOrigin = null;
+        window._vnTitleInputBlockFrames = 24;
 
         SceneManager.goto(Scene_Title);
     };
