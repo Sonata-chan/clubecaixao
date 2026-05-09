@@ -125,7 +125,7 @@
 
         return window.vnPauseScreenshot
             .canvas
-            .toDataURL("image/png");
+            .toDataURL("image/jpeg", 0.6);
     }
 
     //==================================================
@@ -157,7 +157,21 @@
     // OPEN ORIGIN
     //==================================================
 
-    window._vnFileOpenedFromTitle = false;
+    window._vnFileOpenOrigin = null;
+
+    function returnToOriginScene() {
+
+        if (SceneManager._stack.length > 0) {
+            SceneManager.pop();
+            return;
+        }
+
+        if (window._vnFileOpenOrigin === "pause") {
+            SceneManager.goto(Scene_Map);
+        } else {
+            SceneManager.goto(Scene_Title);
+        }
+    }
 
     
     //==================================================
@@ -178,6 +192,16 @@
             this.createSlots();
             this.createBottomUI();
             this.createCloseButton();
+        }
+
+        start() {
+
+            super.start();
+
+            window._vnInputBlockTimer = 10;
+
+            TouchInput.clear();
+            Input.clear();
         }
 
         //==============================================
@@ -765,26 +789,20 @@
     // CLICK
     //==========================================
 
-    if (
+        if (
         hovered &&
         TouchInput.isTriggered()
-    ) {
+        ) {
+
+        TouchInput.clear();
+        Input.clear();
 
         sprite.visible = false;
         hover.visible = false;
 
         Graphics.app.render();
 
-    if (window._vnFileOpenedFromTitle) {
-
-        SceneManager.goto(
-            Scene_Title
-        );
-
-        } else {
-
-        SceneManager.pop();
-        }
+        this.onClose();
     }
     
     }
@@ -794,93 +812,109 @@
     // SAVE
     //==================================================
 
-    class Scene_VNSave
-        extends Scene_VNFile {
+class Scene_VNSave
+    extends Scene_VNFile {
 
-        sceneTitle() {
+    sceneTitle() {
 
-            return "Onde deseja salvar?";
-        }
-
-        onSlotClick(slotId) {
-
-            DataManager.saveGame(
-                slotId
-            );
-
-            SoundManager.playSave();
-
-            if (window._vnFileOpenedFromTitle) {
-
-        SceneManager.goto(
-            Scene_Title
-        );
-
-    } else {
-
-        SceneManager.pop();
-    }
-        }
+        return "Onde deseja salvar?";
     }
 
-    //==================================================
-    // LOAD
-    //==================================================
+    onClose() {
 
-    class Scene_VNLoad
-        extends Scene_VNFile {
+        TouchInput.clear();
+        Input.clear();
 
-        sceneTitle() {
-
-            return "Qual save deseja carregar?";
-        }
-
-        onSlotClick(slotId) {
-
-            if (
-                !DataManager.savefileExists(
-                    slotId
-                )
-            ) {
-                return;
-            }
-
-            SoundManager.playLoad();
-
-            DataManager.loadGame(
-                slotId
-            );
-
-            SceneManager.goto(
-                Scene_Map
-            );
-        }
-
-        
+        returnToOriginScene();
     }
+
+    onSlotClick(slotId) {
+
+        DataManager.saveGame(slotId)
+        .then(() => {
+
+        SoundManager.playSave();
+
+        returnToOriginScene();
+        });
+    }
+}
+
+//==================================================
+// LOAD
+//==================================================
+
+class Scene_VNLoad
+    extends Scene_VNFile {
+
+    sceneTitle() {
+
+        return "Qual save deseja carregar?";
+    }
+
+    onClose() {
+
+        TouchInput.clear();
+        Input.clear();
+
+        returnToOriginScene();
+    }
+
+    onSlotClick(slotId) {
+
+        if (
+            !DataManager.savefileExists(slotId)
+        ) {
+            return;
+        }
+
+        SoundManager.playLoad();
+
+        window._vnFileOpenOrigin = null;
+
+        TouchInput.clear();
+        Input.clear();
+
+        DataManager.loadGame(slotId)
+        .then(() => {
+
+            // Evita restos de Scene_Title/Scene_CustomPause na pilha.
+            SceneManager.clearStack();
+
+            SceneManager.goto(Scene_Map);
+
+        });
+    }
+}
 
     //==================================================
     // GLOBAL
     //==================================================
 
-    self.openVNSave = function(fromTitle = false) {
+    self.openVNSave = function() {
 
-    window._vnFileOpenedFromTitle =
-        fromTitle;
+    if (!window._vnPauseMenuActive) {
 
-    SceneManager.push(
-        Scene_VNSave
-        );
+        SoundManager.playBuzzer();
+
+        return;
+    }
+
+    window._vnFileOpenOrigin = "pause";
+
+    SceneManager.push(Scene_VNSave);
     };
 
     self.openVNLoad = function(fromTitle = false) {
 
-    window._vnFileOpenedFromTitle =
-        fromTitle;
+    window._vnFileOpenOrigin =
+        fromTitle
+            ? "title"
+            : (window._vnPauseMenuActive
+                ? "pause"
+                : "title");
 
-    SceneManager.push(
-        Scene_VNLoad
-        );
+    SceneManager.push(Scene_VNLoad);
     };
 
 

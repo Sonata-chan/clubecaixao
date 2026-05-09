@@ -13,6 +13,12 @@
  * @type file
  * @dir img/pictures/
  * @default btn_bg
+ * 
+ * @param buttonHoverBackground
+ * @text Fundo dos Botões (Hover)
+ * @type file
+ * @dir img/pictures/
+ * @default btn_bg_hover
  *
  * @param fontSize
  * @text Tamanho da Fonte
@@ -74,10 +80,6 @@
 
 (() => {
 
-    //==================================================
-    // PARÂMETROS
-    //==================================================
-
     const pluginName =
         document.currentScript.src
         .match(/([^\/]+)\.js$/)[1];
@@ -90,6 +92,9 @@
 
     const BUTTON_BACKGROUND =
         String(params.buttonBackground || "btn_bg");
+
+    const BUTTON_HOVER_BACKGROUND =
+        String(params.buttonHoverBackground || "btn_bg_hover");
 
     const FONT_SIZE =
         Number(params.fontSize || 26);
@@ -108,7 +113,7 @@
 
     const TITLE_OFFSET_Y =
         Number(params.titleOffsetY || -260);
-    
+
     const PAUSE_BUTTON_IMAGE =
         String(params.pauseButtonImage);
 
@@ -119,25 +124,26 @@
         Number(params.pauseButtonX);
 
     const PAUSE_BUTTON_Y =
-        Number(params.pauseButtonY);    
+        Number(params.pauseButtonY);
 
     const PAUSE_BUTTON_SWITCH =
         Number(params.pauseButtonSwitch);
 
-    //==================================================
-    // REQUEST
-    //==================================================
-
     window._pauseMenuRequested = false;
+    window._vnPauseMenuActive = false;
 
     window.openCustomPauseMenu = function() {
 
+        if (window._pauseMenuRequested) {
+            return;
+        }
+
+        if (!(SceneManager._scene instanceof Scene_Map)) {
+            return;
+        }
+
         window._pauseMenuRequested = true;
     };
-
-    //==================================================
-    // SCENE
-    //==================================================
 
     function Scene_CustomPause() {
         this.initialize(...arguments);
@@ -149,26 +155,37 @@
     Scene_CustomPause.prototype.constructor =
         Scene_CustomPause;
 
-    //==================================================
-    // CREATE
-    //==================================================
-
     Scene_CustomPause.prototype.create =
-        function() {
+    function() {
 
         Scene_MenuBase.prototype.create.call(this);
+
+        TouchInput.clear();
+        Input.clear();
 
         this.createBackground();
         this.createTitle();
         this.createButtons();
     };
 
-    //==================================================
-    // BACKGROUND
-    //==================================================
+    Scene_CustomPause.prototype.start =
+    function() {
+
+        Scene_MenuBase.prototype.start.call(this);
+
+        window._vnPauseMenuActive = true;
+    };
+
+    Scene_CustomPause.prototype.terminate =
+    function() {
+
+        Scene_MenuBase.prototype.terminate.call(this);
+
+        window._vnPauseMenuActive = false;
+    };
 
     Scene_CustomPause.prototype.createBackground =
-        function() {
+    function() {
 
         this._backgroundSprite = new Sprite(
             ImageManager.loadPicture(MENU_BACKGROUND)
@@ -177,12 +194,8 @@
         this.addChild(this._backgroundSprite);
     };
 
-    //==================================================
-    // TITLE
-    //==================================================
-
     Scene_CustomPause.prototype.createTitle =
-        function() {
+    function() {
 
         const bitmap =
             new Bitmap(800, 100);
@@ -212,13 +225,86 @@
         this.addChild(sprite);
     };
 
+    Scene_CustomPause.prototype.createButton =
+    function(text, x, y, callback) {
 
-    //==================================================
-    // BOTÕES
-    //==================================================
+        const container =
+            new Sprite();
+
+        container.x = x;
+        container.y = y;
+
+        const bg =
+            new Sprite(
+                ImageManager.loadPicture(
+                    BUTTON_BACKGROUND
+                )
+            );
+
+        bg.anchor.x = 0.5;
+        bg.anchor.y = 0.5;
+
+        container.addChild(bg);
+
+        const hover =
+            new Sprite(
+                ImageManager.loadPicture(
+                    BUTTON_HOVER_BACKGROUND
+                )
+            );
+
+        hover.anchor.x = 0.5;
+        hover.anchor.y = 0.5;
+
+        hover.opacity = 0;
+
+        container.addChild(hover);
+
+        const bitmap =
+            new Bitmap(500, 80);
+
+        bitmap.fontFace =
+            FONT_FACE;
+
+        bitmap.fontSize =
+            FONT_SIZE;
+
+        bitmap.textColor =
+            "#ffffff";
+
+        bitmap.drawText(
+            text,
+            0,
+            0,
+            500,
+            80,
+            "center"
+        );
+
+        const label =
+            new Sprite(bitmap);
+
+        label.anchor.x = 0.5;
+        label.anchor.y = 0.5;
+
+        container.addChild(label);
+
+        container._callback =
+            callback;
+
+        container._bg =
+            bg;
+
+        container._hover =
+            hover;
+
+        this.addChild(container);
+
+        this._buttons.push(container);
+    };
 
     Scene_CustomPause.prototype.createButtons =
-        function() {
+    function() {
 
         this._buttons = [];
 
@@ -281,80 +367,20 @@
         }
     };
 
-    //==================================================
-    // CREATE BUTTON
-    //==================================================
-
-    Scene_CustomPause.prototype.createButton =
-        function(text, x, y, callback) {
-
-        const container =
-            new Sprite();
-
-        const bg =
-            new Sprite(
-                ImageManager.loadPicture(
-                    BUTTON_BACKGROUND
-                )
-            );
-
-        bg.anchor.x = 0.5;
-        bg.anchor.y = 0.5;
-
-        container.addChild(bg);
-
-        const bitmap =
-            new Bitmap(500, 80);
-
-        bitmap.fontFace = FONT_FACE;
-        bitmap.fontSize = FONT_SIZE;
-
-        bitmap.drawText(
-            text,
-            0,
-            0,
-            500,
-            80,
-            "center"
-        );
-
-        const label =
-            new Sprite(bitmap);
-
-        label.anchor.x = 0.5;
-        label.anchor.y = 0.5;
-
-        container.addChild(label);
-
-        container.x = x;
-        container.y = y;
-
-        container._callback = callback;
-        container._bg = bg;
-
-        this.addChild(container);
-
-        this._buttons.push(container);
-    };
-
-    //==================================================
-    // UPDATE
-    //==================================================
-
     Scene_CustomPause.prototype.update =
-        function() {
+    function() {
 
         Scene_MenuBase.prototype.update.call(this);
 
         this.updateButtons();
     };
 
-    //==================================================
-    // BUTTON INPUT
-    //==================================================
-
     Scene_CustomPause.prototype.updateButtons =
-        function() {
+    function() {
+
+        if (!this._buttons) {
+            return;
+        }
 
         const mx = TouchInput.x;
         const my = TouchInput.y;
@@ -381,6 +407,9 @@
                 my >= top &&
                 my <= bottom;
 
+            button._hover.opacity =
+                hovered ? 255 : 0;
+
             button.scale.x =
                 hovered ? 1.05 : 1;
 
@@ -399,139 +428,136 @@
         }
     };
 
-    //==================================================
-    // SAVE
-    //==================================================
-
     Scene_CustomPause.prototype.commandSave =
-        function() {
-        
-            openVNSave();
-        };
-
-    //==================================================
-    // LOAD
-    //==================================================
-
-    Scene_CustomPause.prototype.commandLoad =
-        function() {
-            
-            openVNLoad();
-        };
-
-    //==================================================
-    // SOUND
-    //==================================================
-
-    Scene_CustomPause.prototype.commandSound =
-        function() {
-
-        if (!AudioManager._muted) {
-
-            AudioManager._savedBgmVolume =
-                AudioManager.bgmVolume;
-
-            AudioManager._savedBgsVolume =
-                AudioManager.bgsVolume;
-
-            AudioManager._savedMeVolume =
-                AudioManager.meVolume;
-
-            AudioManager._savedSeVolume =
-                AudioManager.seVolume;
-
-            AudioManager.bgmVolume = 0;
-            AudioManager.bgsVolume = 0;
-            AudioManager.meVolume = 0;
-            AudioManager.seVolume = 0;
-
-            AudioManager._muted = true;
-
-        } else {
-
-            AudioManager.bgmVolume =
-                AudioManager._savedBgmVolume ?? 100;
-
-            AudioManager.bgsVolume =
-                AudioManager._savedBgsVolume ?? 100;
-
-            AudioManager.meVolume =
-                AudioManager._savedMeVolume ?? 100;
-
-            AudioManager.seVolume =
-                AudioManager._savedSeVolume ?? 100;
-
-            AudioManager._muted = false;
-        }
-
-        SceneManager.goto(
-            Scene_CustomPause
-        );
-    };
-
-    //==================================================
-    // TITLE
-    //==================================================
-
-    Scene_CustomPause.prototype.commandTitle =
     function() {
 
-    // limpa screenshots antigas
-    window.vnPauseScreenshot = null;
+        openVNSave();
+    };
 
-    // limpa imagens
-    $gameScreen.clearPictures();
+    Scene_CustomPause.prototype.commandLoad =
+    function() {
 
-    // volta para a tela inicial nativa
-    SceneManager.goto(Scene_Title);
-
-};
-
-    //==================================================
-    // RESUME
-    //==================================================
+        openVNLoad(false);
+    };
 
     Scene_CustomPause.prototype.commandResume =
-        function() {
+    function() {
+
+        TouchInput.clear();
+        Input.clear();
 
         SceneManager.pop();
     };
 
-    //==================================================
-    // ABERTURA
-    //==================================================
+    Scene_CustomPause.prototype.commandSound =
+function() {
 
-    const _Scene_Map_update =
-        Scene_Map.prototype.update;
+    if (!AudioManager._muted) {
 
-    Scene_Map.prototype.update =
-        function() {
+        AudioManager._savedBgmVolume =
+            AudioManager.bgmVolume;
 
-        _Scene_Map_update.call(this);
+        AudioManager._savedBgsVolume =
+            AudioManager.bgsVolume;
 
-        if (window._pauseMenuRequested) {
+        AudioManager._savedMeVolume =
+            AudioManager.meVolume;
 
-            window._pauseMenuRequested =
-                false;
+        AudioManager._savedSeVolume =
+            AudioManager.seVolume;
 
-            window.vnPauseScreenshot =
-                SceneManager.snap(); 
+        WebAudio.setMasterVolume(0);
+        AudioManager.bgsVolume = 0;
+        AudioManager.meVolume = 0;
+        AudioManager.seVolume = 0;
 
-            SceneManager.push(
-                Scene_CustomPause
-            );
-        }
+        AudioManager._muted = true;
+
+    } else {
+
+        AudioManager.bgmVolume =
+            AudioManager._savedBgmVolume ?? 100;
+
+        AudioManager.bgsVolume =
+            AudioManager._savedBgsVolume ?? 100;
+
+        AudioManager.meVolume =
+            AudioManager._savedMeVolume ?? 100;
+
+        AudioManager.seVolume =
+            AudioManager._savedSeVolume ?? 100;
+
+        AudioManager._muted = false;
+    }
+
+    //==========================================
+    // REMOVE BOTÕES ANTIGOS
+    //==========================================
+
+    for (const button of this._buttons) {
+
+        this.removeChild(button);
+    }
+
+    this._buttons = [];
+
+    //==========================================
+    // RECRIA BOTÕES
+    //==========================================
+
+    this.createButtons();
+};
+
+    Scene_CustomPause.prototype.commandTitle =
+    function() {
+
+        TouchInput.clear();
+        Input.clear();
+
+        AudioManager.stopBgm();
+        AudioManager.stopBgs();
+        AudioManager.stopMe();
+
+        window._pauseMenuRequested = false;
+        window.vnPauseScreenshot = null;
+        window._vnPauseMenuActive = false;
+        window._vnFileOpenOrigin = null;
+        window._vnTitleInputBlockFrames = 24;
+
+        SceneManager.goto(Scene_Title);
     };
 
-    //==================================================
-    // PAUSAR EVENTOS
-    //==================================================
+    const _Scene_Map_update =
+    Scene_Map.prototype.update;
+
+    Scene_Map.prototype.update =
+    function() {
+
+    _Scene_Map_update.call(this);
+
+    if (
+        window._pauseMenuRequested &&
+        !SceneManager.isSceneChanging()
+    ) {
+
+        window._pauseMenuRequested = false;
+
+        window.vnPauseScreenshot =
+            SceneManager.snap();
+
+        SceneManager.push(
+            Scene_CustomPause
+        );
+    }
+
+    this.updatePauseMenuButton();
+    };
 
     const _Game_Map_updateInterpreter =
         Game_Map.prototype.updateInterpreter;
 
     Game_Map.prototype.updateInterpreter =
-        function() {
+    function() {
 
         if (
             SceneManager._scene instanceof
@@ -543,153 +569,121 @@
         _Game_Map_updateInterpreter.call(this);
     };
 
-//==================================================
-// MAP PAUSE BUTTON
-//==================================================
+    const _VNPause_CreateAllWindows =
+        Scene_Map.prototype.createAllWindows;
 
-const _VNPause_CreateAllWindows =
-    Scene_Map.prototype.createAllWindows;
-
-Scene_Map.prototype.createAllWindows =
+    Scene_Map.prototype.createAllWindows =
     function() {
 
-    _VNPause_CreateAllWindows.call(this);
+        _VNPause_CreateAllWindows.call(this);
 
-    this.createPauseMenuButton();
-};
+        this.createPauseMenuButton();
+    };
 
-Scene_Map.prototype.createPauseMenuButton =
+    Scene_Map.prototype.createPauseMenuButton =
     function() {
 
-    this._pauseButtonContainer =
-        new Sprite();
+        this._pauseButtonContainer =
+            new Sprite();
 
-    this._pauseButtonContainer.x =
-        PAUSE_BUTTON_X;
+        this._pauseButtonContainer.x =
+            PAUSE_BUTTON_X;
 
-    this._pauseButtonContainer.y =
-        PAUSE_BUTTON_Y;
+        this._pauseButtonContainer.y =
+            PAUSE_BUTTON_Y;
 
-    //==============================================
-    // NORMAL
-    //==============================================
+        const normal =
+            new Sprite(
+                ImageManager.loadPicture(
+                    PAUSE_BUTTON_IMAGE
+                )
+            );
 
-    const normal =
-        new Sprite(
-            ImageManager.loadPicture(
-                PAUSE_BUTTON_IMAGE
-            )
-        );
-
-    this._pauseButtonContainer
-        .addChild(normal);
-
-    //==============================================
-    // HOVER
-    //==============================================
-
-    const hover =
-        new Sprite(
-            ImageManager.loadPicture(
-                PAUSE_BUTTON_HOVER
-            )
-        );
-
-    hover.opacity = 0;
-
-    this._pauseButtonContainer
-        .addChild(hover);
-
-    this._pauseHoverSprite =
-        hover;
-
-    this.addChild(
         this._pauseButtonContainer
-    );
-};
+            .addChild(normal);
 
-//==================================================
-// UPDATE
-//==================================================
+        const hover =
+            new Sprite(
+                ImageManager.loadPicture(
+                    PAUSE_BUTTON_HOVER
+                )
+            );
 
-const _VNPause_SceneMap_Update =
-    Scene_Map.prototype.update;
+        hover.opacity = 0;
 
-Scene_Map.prototype.update =
+        this._pauseButtonContainer
+            .addChild(hover);
+
+        this._pauseHoverSprite =
+            hover;
+
+        this.addChild(
+            this._pauseButtonContainer
+        );
+    };
+
+    Scene_Map.prototype.updatePauseMenuButton =
     function() {
 
-    _VNPause_SceneMap_Update.call(this);
+        if (!this._pauseButtonContainer) {
+            return;
+        }
 
-    this.updatePauseMenuButton();
-};
+        const enabled =
+        $gameSwitches.value(
+            PAUSE_BUTTON_SWITCH
+        );
 
-Scene_Map.prototype.updatePauseMenuButton =
-    function() {
+        if (enabled) {
 
-    if (!this._pauseButtonContainer) {
-        return;
-    }
+            this._pauseButtonContainer.opacity += 20;
 
-    //==============================================
-    // VISIBILIDADE
-    //==============================================
+        } else {
 
-    const enabled =
-    $gameSwitches.value(
-        PAUSE_BUTTON_SWITCH
-    );
+            this._pauseButtonContainer.opacity -= 20;
+        }
 
-    if (enabled) {
+        this._pauseButtonContainer.opacity =
+        this._pauseButtonContainer.opacity
+        .clamp(0, 255);
 
-    this._pauseButtonContainer.opacity += 20;
+        if (
+            this._pauseButtonContainer.opacity <= 0
+        ) {
+            return;
+        }
 
-    } else {
+        const sprite =
+            this._pauseButtonContainer;
 
-    this._pauseButtonContainer.opacity -= 20;
-    }
+        const width =
+            sprite.getBounds().width;
 
-    this._pauseButtonContainer.opacity =
-    this._pauseButtonContainer.opacity
-    .clamp(0, 255);
+        const height =
+            sprite.getBounds().height;
 
-// Não deixa clicar invisível
-    if (
-    this._pauseButtonContainer.opacity <= 0
-    ) {
-    return;
-    }
+        const hovered =
+            TouchInput.x >= sprite.x &&
+            TouchInput.x <= sprite.x + width &&
+            TouchInput.y >= sprite.y &&
+            TouchInput.y <= sprite.y + height;
 
-    const sprite =
-        this._pauseButtonContainer;
+        this._pauseHoverSprite.opacity =
+            hovered ? 255 : 0;
 
-    const width =
-        sprite.getBounds().width;
+        sprite.scale.x =
+            hovered ? 1.03 : 1;
 
-    const height =
-        sprite.getBounds().height;
+        sprite.scale.y =
+            hovered ? 1.03 : 1;
 
-    const hovered =
-        TouchInput.x >= sprite.x &&
-        TouchInput.x <= sprite.x + width &&
-        TouchInput.y >= sprite.y &&
-        TouchInput.y <= sprite.y + height;
+        if (
+            hovered &&
+            TouchInput.isTriggered()
+        ) {
 
-    this._pauseHoverSprite.opacity =
-        hovered ? 255 : 0;
+            openCustomPauseMenu();
+        }
+    };
 
-    sprite.scale.x =
-        hovered ? 1.03 : 1;
-
-    sprite.scale.y =
-        hovered ? 1.03 : 1;
-
-    if (
-        hovered &&
-        TouchInput.isTriggered()
-    ) {
-
-        openCustomPauseMenu();
-    }
-};
-    
 })();
