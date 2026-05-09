@@ -157,7 +157,21 @@
     // OPEN ORIGIN
     //==================================================
 
-    window._vnFileOpenedFromTitle = false;
+    window._vnFileOpenOrigin = null;
+
+    function returnToOriginScene() {
+
+        if (SceneManager._stack.length > 0) {
+            SceneManager.pop();
+            return;
+        }
+
+        if (window._vnFileOpenOrigin === "pause") {
+            SceneManager.goto(Scene_Map);
+        } else {
+            SceneManager.goto(Scene_Title);
+        }
+    }
 
     
     //==================================================
@@ -811,8 +825,7 @@ class Scene_VNSave
         TouchInput.clear();
         Input.clear();
 
-        // Save SEMPRE volta pro menu pause
-        SceneManager.pop();
+        returnToOriginScene();
     }
 
     onSlotClick(slotId) {
@@ -822,7 +835,7 @@ class Scene_VNSave
 
         SoundManager.playSave();
 
-        SceneManager.pop();
+        returnToOriginScene();
         });
     }
 }
@@ -844,24 +857,7 @@ class Scene_VNLoad
         TouchInput.clear();
         Input.clear();
 
-        //==========================================
-        // SE VEIO DA TITLE
-        //==========================================
-
-        if (window._vnFileOpenedFromTitle) {
-
-            window._vnFileOpenedFromTitle = false;
-
-            SceneManager.goto(Scene_Title);
-
-        //==========================================
-        // SE VEIO DO PAUSE
-        //==========================================
-
-        } else {
-
-            SceneManager.pop();
-        }
+        returnToOriginScene();
     }
 
     onSlotClick(slotId) {
@@ -874,14 +870,16 @@ class Scene_VNLoad
 
         SoundManager.playLoad();
 
-        // limpa flag
-        window._vnFileOpenedFromTitle = false;
+        window._vnFileOpenOrigin = null;
 
         TouchInput.clear();
         Input.clear();
 
         DataManager.loadGame(slotId)
         .then(() => {
+
+            // Evita restos de Scene_Title/Scene_CustomPause na pilha.
+            SceneManager.clearStack();
 
             SceneManager.goto(Scene_Map);
 
@@ -893,24 +891,30 @@ class Scene_VNLoad
     // GLOBAL
     //==================================================
 
-    self.openVNSave = function(fromTitle = false) {
+    self.openVNSave = function() {
 
-    window._vnFileOpenedFromTitle =
-        fromTitle;
+    if (!window._vnPauseMenuActive) {
 
-    SceneManager.push(
-        Scene_VNSave
-        );
+        SoundManager.playBuzzer();
+
+        return;
+    }
+
+    window._vnFileOpenOrigin = "pause";
+
+    SceneManager.push(Scene_VNSave);
     };
 
     self.openVNLoad = function(fromTitle = false) {
 
-    window._vnFileOpenedFromTitle =
-        fromTitle;
+    window._vnFileOpenOrigin =
+        fromTitle
+            ? "title"
+            : (window._vnPauseMenuActive
+                ? "pause"
+                : "title");
 
-    SceneManager.push(
-        Scene_VNLoad
-        );
+    SceneManager.push(Scene_VNLoad);
     };
 
 

@@ -130,8 +130,17 @@
         Number(params.pauseButtonSwitch);
 
     window._pauseMenuRequested = false;
+    window._vnPauseMenuActive = false;
 
     window.openCustomPauseMenu = function() {
+
+        if (window._pauseMenuRequested) {
+            return;
+        }
+
+        if (!(SceneManager._scene instanceof Scene_Map)) {
+            return;
+        }
 
         window._pauseMenuRequested = true;
     };
@@ -157,6 +166,22 @@
         this.createBackground();
         this.createTitle();
         this.createButtons();
+    };
+
+    Scene_CustomPause.prototype.start =
+    function() {
+
+        Scene_MenuBase.prototype.start.call(this);
+
+        window._vnPauseMenuActive = true;
+    };
+
+    Scene_CustomPause.prototype.terminate =
+    function() {
+
+        Scene_MenuBase.prototype.terminate.call(this);
+
+        window._vnPauseMenuActive = false;
     };
 
     Scene_CustomPause.prototype.createBackground =
@@ -412,7 +437,16 @@
     Scene_CustomPause.prototype.commandLoad =
     function() {
 
-        openVNLoad();
+        openVNLoad(false);
+    };
+
+    Scene_CustomPause.prototype.commandResume =
+    function() {
+
+        TouchInput.clear();
+        Input.clear();
+
+        SceneManager.pop();
     };
 
     Scene_CustomPause.prototype.commandSound =
@@ -486,10 +520,8 @@ function() {
 
         window._pauseMenuRequested = false;
         window.vnPauseScreenshot = null;
-        window._vnFileOpenedFromTitle = false;
-        window._vnSceneBusy = false;
-
-        SceneManager._stack = [];
+        window._vnPauseMenuActive = false;
+        window._vnFileOpenOrigin = null;
 
         SceneManager.goto(Scene_Title);
     };
@@ -502,7 +534,10 @@ function() {
 
     _Scene_Map_update.call(this);
 
-    if (window._pauseMenuRequested) {
+    if (
+        window._pauseMenuRequested &&
+        !SceneManager.isSceneChanging()
+    ) {
 
         window._pauseMenuRequested = false;
 
