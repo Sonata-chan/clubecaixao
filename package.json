@@ -3,7 +3,7 @@
     "main": "index.html",
     "chromium-args": "--force-color-profile=srgb",
     "window": {
-        "title": "tela em produção!",
+        "title": "clubecaixao",
         "width": 816,
         "height": 624,
         "position": "center",
