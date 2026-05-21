@@ -119,6 +119,10 @@ class Main {
             this.printError("Error", message);
         } else if (this.error) {
             this.printError(this.error.name, this.error.message);
+        } else if (this.isAutomationTestMode()) {
+            this.loadAutomationTestHarness()
+                .then(() => this.initEffekseerRuntime())
+                .catch(error => this.printError(error.name, error.message));
         } else {
             this.initEffekseerRuntime();
         }
@@ -137,6 +141,28 @@ class Main {
             typeof process === "object" &&
             process.mainModule.filename.startsWith("/private/var")
         );
+    }
+
+    isAutomationTestMode() {
+        try {
+            return new URLSearchParams(window.location.search).get("testMode") === "1";
+        } catch (error) {
+            return false;
+        }
+    }
+
+    loadAutomationTestHarness() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "js/plugins/automation-test-harness.js";
+            script.async = false;
+            script.defer = true;
+            script.onload = () => resolve();
+            script.onerror = event => reject(new Error(`Failed to load ${event.target._url || script.src}`));
+            script._url = script.src;
+            document.body.appendChild(script);
+        });
     }
 
     initEffekseerRuntime() {

@@ -1,0 +1,73 @@
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /index.html HTTP/1.1" 200 -
+
+Running 1 test using 1 worker
+
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /index.html?testMode=1&testCase=boot HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /css/game.css HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/main.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_core.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/effekseer.min.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/pixi.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/localforage.min.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/pako.min.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/vorbisdecoder.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_objects.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_managers.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_sprites.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_windows.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/rmmz_scenes.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/Cae_PictureTouch.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/telainicialcustomizada.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/GALV_ChoicePauseMZ.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/MOG_PictureEffects.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/GALV_VisualNovelChoicesMZ.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/Cae_ChoiceShuffle.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/menupause.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/saveload.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/VN_AutoColorWords.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/automation-test-harness.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/plugins/MOG_TouchAnimation.js HTTP/1.1" 200 -
+[2m[WebServer] [22m127.0.0.1 - - [20/May/2026 22:18:42] "GET /js/libs/effekseer.wasm HTTP/1.1" 200 -
+  ✘  1 tests/e2e/boot.spec.js:3:1 › boot reaches custom title screen (1.0m)
+
+
+  1) tests/e2e/boot.spec.js:3:1 › boot reaches custom title screen ─────────────────────────────────
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: page.waitForFunction: Test timeout of 60000ms exceeded.
+    console: error: Error: Failed to initialize graphics.
+        at SceneManager.initGraphics (http://127.0.0.1:8000/js/rmmz_managers.js:1957:15)
+        at SceneManager.initialize (http://127.0.0.1:8000/js/rmmz_managers.js:1929:10)
+        at SceneManager.run (http://127.0.0.1:8000/js/rmmz_managers.js:1918:14)
+        at Main.onEffekseerLoad (http://127.0.0.1:8000/js/main.js:150:22)
+        at _onRuntimeInitialized (http://127.0.0.1:8000/js/libs/effekseer.min.js:35:44)
+        at http://127.0.0.1:8000/js/libs/effekseer.min.js:35:327
+        at Module.onRuntimeInitialized (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164351)
+        at doRun (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164904)
+        at run (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:165064)
+        at runCaller (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164563)
+    pageerrors: <none>
+    state: null
+    body: <empty>
+        at SceneManager.initGraphics (http://127.0.0.1:8000/js/rmmz_managers.js:1957:15)
+        at SceneManager.initialize (http://127.0.0.1:8000/js/rmmz_managers.js:1929:10)
+        at SceneManager.run (http://127.0.0.1:8000/js/rmmz_managers.js:1918:14)
+        at Main.onEffekseerLoad (http://127.0.0.1:8000/js/main.js:150:22)
+        at _onRuntimeInitialized (http://127.0.0.1:8000/js/libs/effekseer.min.js:35:44)
+        at http://127.0.0.1:8000/js/libs/effekseer.min.js:35:327
+        at Module.onRuntimeInitialized (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164351)
+        at doRun (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164904)
+        at run (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:165064)
+        at runCaller (http://127.0.0.1:8000/js/libs/effekseer.min.js:15:164563)
+        at /home/lucca/clubecaixao/tests/e2e/boot.spec.js:30:15
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/boot-boot-reaches-custom-title-screen/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/boot-boot-reaches-custom-title-screen/error-context.md
+
+  1 failed
+    tests/e2e/boot.spec.js:3:1 › boot reaches custom title screen ──────────────────────────────────
