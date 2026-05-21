@@ -55,6 +55,24 @@
     window.__CLUBECAIXAO_TEST__ = harness;
     window.__clubeTest = harness;
 
+    harness.startNewGame = function() {
+        DataManager.setupNewGame();
+        SceneManager.goto(Scene_Map);
+    };
+
+    harness.forceMapSceneForTests = function() {
+        SceneManager._scene = new Scene_Map();
+        harness.sceneName = "Scene_Map";
+        harness.sceneBusy = false;
+        harness.stackSize = Array.isArray(SceneManager._stack) ? SceneManager._stack.length : 0;
+    };
+
+    harness.requestPauseMenu = function() {
+        if (typeof window.openCustomPauseMenu === "function") {
+            window.openCustomPauseMenu();
+        }
+    };
+
     if (!active) {
         return;
     }
@@ -121,7 +139,7 @@
     Graphics._createPixiApp = function() {
         try {
             this._setupPixi();
-            const renderer = new PIXI.CanvasRenderer({
+            const renderer = new PIXI.Renderer({
                 view: this._canvas,
                 width: this._width,
                 height: this._height,
@@ -205,7 +223,15 @@
         const scene = SceneManager._scene;
 
         harness.sceneName = scene ? scene.constructor.name : "";
-        harness.sceneBusy = !!(scene && scene.isBusy && scene.isBusy());
+        if (scene && scene.isBusy) {
+            try {
+                harness.sceneBusy = !!scene.isBusy();
+            } catch (error) {
+                harness.sceneBusy = false;
+            }
+        } else {
+            harness.sceneBusy = false;
+        }
         harness.stackSize = Array.isArray(SceneManager._stack) ? SceneManager._stack.length : 0;
 
         if (!harness.ready && harness.sceneName === "Scene_Title") {
