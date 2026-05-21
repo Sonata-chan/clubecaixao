@@ -1,10 +1,6 @@
 {
     "name": "rmmz-game",
     "main": "index.html",
-    "scripts": {
-        "test:e2e": "playwright test",
-        "test:e2e:headed": "playwright test --headed"
-    },
     "chromium-args": "--force-color-profile=srgb",
     "window": {
         "title": "clubecaixao",
@@ -12,8 +8,5 @@
         "height": 624,
         "position": "center",
         "icon": "icon/icon.png"
-    },
-    "devDependencies": {
-        "@playwright/test": "^1.54.2"
     }
 }
