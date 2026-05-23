@@ -170,10 +170,37 @@ names: cenario_cemiterio,cenario_quarto,cenario_rua
 - Executa o equivalente ao `Show Picture` nativo, mas so depois do warmup da imagem.
 - Parametro `waitForWarmup`: recomendado `true` para evitar corrida de render.
 
+### Comando: Release Pictures
+
+- Plugin command: `release_pictures`
+- Remove imagens especificadas do cache do `ImageManager` e libera `BaseTexture`/bitmap.
+- O plugin nao descarrega imagens que ainda estejam em uso na tela.
+
+Exemplo:
+
+```text
+names: cenario_quarto_antigo,cenario_corredor_antigo
+```
+
+### Comando: Trim Tracked Pictures
+
+- Plugin command: `trim_tracked_pictures`
+- Descarta imagens antigas que passaram por warmup/show, mantendo apenas as mais recentes.
+- Parametro `keepLast`: quantas imagens recentes manter.
+- Parametro `keepNames`: nomes extras que devem permanecer carregados.
+
+Exemplo:
+
+```text
+keepLast: 2
+keepNames: cenario_atual,proximo_cenario
+```
+
 Uso recomendado em evento:
 
 1. Chamar `warmup_pictures` com a proxima imagem alguns comandos antes.
 2. No momento de trocar cenario, usar `show_picture_after_warmup` com `waitForWarmup=true`.
+3. Depois que o cenario anterior sair de uso, chamar `trim_tracked_pictures` ou `release_pictures` para liberar memoria.
 
 ### Comando: Preload Images
 
