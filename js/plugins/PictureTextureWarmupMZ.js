@@ -134,8 +134,8 @@
 (() => {
     const PLUGIN_NAME = "PictureTextureWarmupMZ";
     const AUTO_TRIM_KEEP_LAST = 12;
-    const DEBUG_RENDER = true;
-    const DEBUG_TARGET_PICTURES = new Set(["cen034"]);
+    const DEBUG_RENDER = false;
+    const DEBUG_TARGET_PICTURES = new Set();
     const DEBUG_PREFIX = "[PTW-DIAG]";
     const warmupCache = new Map();
     const pendingWarmups = new Set();
@@ -412,35 +412,6 @@
         }
     }
 
-    function forceSpriteBitmapRefresh(sprite, expectedName) {
-        if (!sprite || !sprite.bitmap || !sprite.bitmap.isReady()) {
-            return;
-        }
-
-        const picture = sprite.picture && sprite.picture();
-        if (!picture || picture.name() !== expectedName) {
-            return;
-        }
-
-        // Force a texture/frame rebuild on the actual displayed Sprite_Picture.
-        sprite._onBitmapChange();
-        sprite._refresh();
-        if (sprite.bitmap.width > 0 && sprite.bitmap.height > 0) {
-            sprite.setFrame(0, 0, sprite.bitmap.width, sprite.bitmap.height);
-        }
-        sprite.visible = true;
-        diag(expectedName, sprite._pictureId, "force sprite refresh applied", {
-            visible: sprite.visible,
-            opacity: sprite.opacity,
-            bitmapReady: !!(sprite.bitmap && sprite.bitmap.isReady && sprite.bitmap.isReady()),
-            bitmapW: sprite.bitmap ? sprite.bitmap.width : null,
-            bitmapH: sprite.bitmap ? sprite.bitmap.height : null,
-            texValid: !!(sprite.texture && sprite.texture.baseTexture && sprite.texture.baseTexture.valid),
-            frameW: sprite.texture && sprite.texture.frame ? sprite.texture.frame.width : null,
-            frameH: sprite.texture && sprite.texture.frame ? sprite.texture.frame.height : null
-        });
-    }
-
     function findPictureSpriteById(pictureId) {
         const scene = SceneManager && SceneManager._scene;
         const spriteset = scene && scene._spriteset;
@@ -477,7 +448,9 @@
                 return false;
             })
             .finally(() => {
-                forceSpriteBitmapRefresh(sprite, expectedName);
+                if (sprite && sprite.picture && sprite.picture() && sprite.picture().name() === expectedName) {
+                    sprite.visible = true;
+                }
             });
     }
 
@@ -518,7 +491,6 @@
                 trackPicture(name);
                 showPictureNow(screen, pictureArgs);
                 diag(name, pictureId, "showPictureNow executed");
-                schedulePictureSpriteRefresh(pictureId, name);
 
                 if (previousName && previousName !== name) {
                     releasePicture(previousName);
@@ -529,38 +501,66 @@
             });
     }
 
-    const _Sprite_Picture_updateBitmap = Sprite_Picture.prototype.updateBitmap;
     Sprite_Picture.prototype.updateBitmap = function() {
-        _Sprite_Picture_updateBitmap.call(this);
-
         const picture = this.picture();
-        if (!picture || !this.bitmap || !this.bitmap.isReady()) {
+        if (!picture) {
+            this._ptwPictureName = "";
+            this._ptwBitmapToken = 0;
+            this.bitmap = null;
+            this.visible = false;
             return;
         }
 
         const pictureName = String(picture.name() || "").trim();
         if (!pictureName) {
+            this._ptwPictureName = "";
+            this._ptwBitmapToken = 0;
+            this.bitmap = null;
+            this.visible = false;
             return;
         }
 
-        if (
-            this._ptwLastRenderedName === pictureName &&
-            this._ptwLastRenderedBitmap === this.bitmap
-        ) {
+        const bitmapChanged = this._ptwPictureName !== pictureName || !this.bitmap;
+        if (bitmapChanged) {
+            this._ptwPictureName = pictureName;
+            this._ptwBitmapToken = (this._ptwBitmapToken || 0) + 1;
+            const token = this._ptwBitmapToken;
+            const bitmap = ImageManager.loadPicture(pictureName);
+            this.visible = false;
+            this.bitmap = bitmap;
+
+            const revealSprite = () => {
+                if (this._ptwBitmapToken !== token) {
+                    return;
+                }
+                const currentPicture = this.picture();
+                if (!currentPicture || String(currentPicture.name() || "").trim() !== pictureName) {
+                    return;
+                }
+                this.visible = true;
+                this._onBitmapChange();
+                this._refresh();
+            };
+
+            if (bitmap.isReady()) {
+                revealSprite();
+            } else {
+                bitmap.addLoadListener(revealSprite);
+            }
             return;
         }
 
-        this._ptwLastRenderedName = pictureName;
-        this._ptwLastRenderedBitmap = this.bitmap;
+        if (!this.bitmap.isReady()) {
+            this.visible = false;
+            return;
+        }
 
-        guaranteeBitmapRendered(this.bitmap)
-            .catch(error => {
-                console.warn("PictureTextureWarmupMZ sprite warmup error:", pictureName, error);
-                return false;
-            })
-            .finally(() => {
-                forceSpriteBitmapRefresh(this, pictureName);
-            });
+        this.visible = true;
+        this.updateOrigin();
+        this.updatePosition();
+        this.updateScale();
+        this.updateTone();
+        this.updateOther();
     };
 
     Game_Screen.prototype.showPicture = function(
@@ -591,19 +591,13 @@
 
         diag(normalizedName, pictureId, "global showPicture hook executed");
 
-        const requestToken = nextPictureToken(Number(pictureId || 0));
         warmupPicture(normalizedName)
             .catch(error => {
                 console.warn("PictureTextureWarmupMZ background warmup error:", normalizedName, error);
                 return false;
             })
             .finally(() => {
-                if (!isLatestPictureToken(Number(pictureId || 0), requestToken)) {
-                    diag(normalizedName, pictureId, "global hook discarded by newer request token");
-                    return;
-                }
                 trackPicture(normalizedName);
-                schedulePictureSpriteRefresh(Number(pictureId || 0), normalizedName);
             });
     };
 

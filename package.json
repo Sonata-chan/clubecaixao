@@ -1,18 +1,6 @@
 {
     "name": "rmmz-game",
-    "private": true,
     "main": "index.html",
-    "scripts": {
-        "test:e2e:stop-server": "sh -c 'pid=$(lsof -tiTCP:8000 -sTCP:LISTEN || true); if [ -n \"$pid\" ]; then kill $pid; fi'",
-        "test:e2e": "npm run test:e2e:stop-server && playwright test",
-        "test:e2e:headed": "npm run test:e2e:stop-server && PW_USE_SWIFTSHADER=0 playwright test --headed --workers=1",
-        "test:e2e:debug": "npm run test:e2e:stop-server && PW_USE_SWIFTSHADER=0 playwright test --debug",
-        "test:e2e:local": "npm run test:e2e:stop-server && sh -c 'xvfb-run -a npx playwright test --headed --workers=1 --reporter=line 2>&1 | tee test_output.txt'",
-        "test:e2e:manual": "npm run test:e2e:stop-server && sh ./scripts/manual-test-env.sh"
-    },
-    "devDependencies": {
-        "@playwright/test": "^1.60.0"
-    },
     "chromium-args": "--force-color-profile=srgb",
     "window": {
         "title": "clubecaixao",
