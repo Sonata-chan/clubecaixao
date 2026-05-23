@@ -15,158 +15,179 @@
 Error: page.evaluate: Target page, context or browser has been closed
 ```
 
-```
-Error: browserContext.close: Test ended.
-Browser logs:
+# Test source
 
-[pid=37854][err] [0523/010030.548248:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.548296:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.623202:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.623251:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.671294:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.671316:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.739525:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.739554:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.792140:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.794167:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.857953:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.857999:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.923089:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.923121:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.961269:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010030.961625:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.022885:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.022918:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.075814:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.075879:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.139850:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.139897:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.188771:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.188807:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.241603:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.241656:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.288205:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.288238:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.337936:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.337966:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.388040:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.388169:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.437865:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.437896:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.488404:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.488447:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.521439:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.521486:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.570487:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.570592:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.621014:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.621041:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.675933:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.675964:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.708692:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010031.708723:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.543520:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.543555:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.591138:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.591177:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.641705:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.641771:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.696233:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.696299:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.741828:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.741870:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.788951:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.789118:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.825336:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.825362:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.877641:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.877686:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.925014:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.925060:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.975958:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010032.976040:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.023997:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.024244:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.091155:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.091224:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.142745:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.142793:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.190292:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.190805:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.243147:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.243229:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.292620:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.292683:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.328725:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.328765:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.375377:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.375441:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.425609:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.425842:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.474998:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.475037:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.541513:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.541539:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.593163:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.593475:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.642590:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.642642:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.706076:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.706109:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.756587:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.756611:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.809447:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.809505:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.876954:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.877006:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.940869:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.940925:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.988780:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010033.992830:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.044164:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.044204:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.106567:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.106599:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.161152:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.161214:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.230243:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.230426:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.273295:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.273334:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.323220:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.323244:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.372444:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.372645:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.428354:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.428405:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.474279:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.474310:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.526825:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.526865:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.573626:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.573656:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.625364:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.626464:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.695014:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.695056:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.743302:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.743360:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.807233:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.807263:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.876903:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.876952:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.942263:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010034.942312:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.010637:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.010686:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.071071:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.071152:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.178392:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.178461:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.255876:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854][err] [0523/010035.256013:INFO:CONSOLE:1677] "The provided value 'undefined' is not a valid enum value of type CanvasTextAlign.", source: http://127.0.0.1:8000/js/rmmz_core.js (1677)
-[pid=37854] <gracefully close start>
-[pid=37854] <forcefully close>
-[pid=37854] <kill>
-[pid=37854] <will force kill>
+```ts
+  42  |         }
+  43  | 
+  44  |         const status = response.status();
+  45  |         if (status >= 400) {
+  46  |             badMediaResponses.push({ url, status });
+  47  |             return;
+  48  |         }
+  49  | 
+  50  |         if (/\/img\//i.test(url) || /\.(png|jpg|jpeg|webp|bmp|gif)(\?|$)/i.test(url)) {
+  51  |             loadedImageUrls.add(url);
+  52  |         }
+  53  |         if (/\/audio\//i.test(url) || /\.(ogg|m4a|mp3|wav)(\?|$)/i.test(url)) {
+  54  |             loadedAudioUrls.add(url);
+  55  |         }
+  56  |     });
+  57  | 
+  58  |     page.on("pageerror", (error) => {
+  59  |         pageErrors.push(error.message || String(error));
+  60  |     });
+  61  | 
+  62  |     await page.goto("/index.html?testMode=1&testCase=full-route-media");
+  63  | 
+  64  |     await page.waitForFunction(() => {
+  65  |         const harness = window.__CLUBECAIXAO_TEST__;
+  66  |         return harness && harness.ready && harness.sceneName === "Scene_Title";
+  67  |     }, { timeout: 30000 });
+  68  | 
+  69  |     await page.evaluate(() => {
+  70  |         const scene = SceneManager._scene;
+  71  |         if (scene && scene._vnButtons && scene._vnButtons[0] && scene._vnButtons[0]._callback) {
+  72  |             scene._vnButtons[0]._callback();
+  73  |         }
+  74  |     });
+  75  | 
+  76  |     await page.click("#gameCanvas", { force: true }).catch(() => {});
+  77  | 
+  78  |     const startedAt = Date.now();
+  79  |     const maxRouteDurationMs = 22 * 60 * 1000;
+  80  |     let reachedEnding = false;
+  81  |     let reachedMapAtLeastOnce = false;
+  82  |     let lastState = null;
+  83  | 
+  84  |     for (let i = 0; i < 35000; i++) {
+  85  |         await page.evaluate(() => {
+  86  |             const scene = SceneManager._scene;
+  87  | 
+  88  |             if (window.Input && Input.virtualClick) {
+  89  |                 Input.virtualClick("ok");
+  90  |             }
+  91  | 
+  92  |             const messageWindow = scene && scene._messageWindow;
+  93  |             if (messageWindow) {
+  94  |                 messageWindow._waitCount = 0;
+  95  |                 messageWindow._showFast = true;
+  96  |                 messageWindow._lineShowFast = true;
+  97  |                 messageWindow.pause = false;
+  98  |                 if (messageWindow.pause && messageWindow.terminateMessage) {
+  99  |                     messageWindow.terminateMessage();
+  100 |                 }
+  101 |             }
+  102 | 
+  103 |             const choiceWindow = scene && scene._choiceListWindow;
+  104 |             if (choiceWindow && choiceWindow.active && choiceWindow.processOk) {
+  105 |                 choiceWindow.select(0);
+  106 |                 choiceWindow.processOk();
+  107 |             }
+  108 | 
+  109 |             const clearInterpreterWaits = (interpreter) => {
+  110 |                 if (!interpreter) {
+  111 |                     return;
+  112 |                 }
+  113 |                 interpreter._waitCount = 0;
+  114 |                 interpreter._waitMode = "";
+  115 |                 if (interpreter._childInterpreter) {
+  116 |                     clearInterpreterWaits(interpreter._childInterpreter);
+  117 |                 }
+  118 |             };
+  119 | 
+  120 |             if (window.$gameMap && $gameMap._interpreter) {
+  121 |                 clearInterpreterWaits($gameMap._interpreter);
+  122 |             }
+  123 |             if (window.$gameTroop && $gameTroop._interpreter) {
+  124 |                 clearInterpreterWaits($gameTroop._interpreter);
+  125 |             }
+  126 | 
+  127 |             if (scene && scene.constructor && scene.constructor.name === "Scene_Title") {
+  128 |                 if (scene._vnButtons && scene._vnButtons[0] && scene._vnButtons[0]._callback) {
+  129 |                     scene._vnButtons[0]._callback();
+  130 |                 }
+  131 |             }
+  132 |         });
+  133 | 
+  134 |         if (i % 20 === 0) {
+  135 |             await page.click("#gameCanvas", { force: true, position: { x: 640, y: 360 } }).catch(() => {});
+  136 |             await page.click("#gameCanvas", { force: true, position: { x: 320, y: 360 } }).catch(() => {});
+  137 |             await page.click("#gameCanvas", { force: true, position: { x: 960, y: 360 } }).catch(() => {});
+  138 |         }
+  139 | 
+  140 |         await page.waitForTimeout(10);
+  141 | 
+> 142 |         lastState = await page.evaluate(() => {
+      |                                ^ Error: page.evaluate: Target page, context or browser has been closed
+  143 |             const harness = window.__CLUBECAIXAO_TEST__;
+  144 |             const sceneName = harness ? harness.sceneName : "";
+  145 |             const switches = window.$gameSwitches;
+  146 | 
+  147 |             const endingFlags = {
+  148 |                 finalAlex: !!(switches && switches.value(22)),
+  149 |                 finalCarol: !!(switches && switches.value(23)),
+  150 |                 finalNi: !!(switches && switches.value(24)),
+  151 |                 finalSecreto: !!(switches && switches.value(25)),
+  152 |                 creditos: !!(switches && switches.value(29))
+  153 |             };
+  154 | 
+  155 |             const anyEndingFlag =
+  156 |                 endingFlags.finalAlex
+  157 |                 || endingFlags.finalCarol
+  158 |                 || endingFlags.finalNi
+  159 |                 || endingFlags.finalSecreto
+  160 |                 || endingFlags.creditos;
+  161 | 
+  162 |             return {
+  163 |                 sceneName,
+  164 |                 anyEndingFlag,
+  165 |                 endingFlags,
+  166 |                 transitions: harness ? harness.transitions.length : 0,
+  167 |                 marks: harness ? harness.marks.length : 0,
+  168 |                 frameCount: window.Graphics ? Graphics.frameCount : 0
+  169 |             };
+  170 |         });
+  171 | 
+  172 |         if (lastState.sceneName === "Scene_Map") {
+  173 |             reachedMapAtLeastOnce = true;
+  174 |         }
+  175 | 
+  176 |         if (lastState.anyEndingFlag) {
+  177 |             reachedEnding = true;
+  178 |             break;
+  179 |         }
+  180 | 
+  181 |         if (Date.now() - startedAt > maxRouteDurationMs) {
+  182 |             break;
+  183 |         }
+  184 |     }
+  185 | 
+  186 |     expect(reachedMapAtLeastOnce, "A rota nao chegou a Scene_Map").toBe(true);
+  187 |     expect(
+  188 |         reachedEnding,
+  189 |         `A rota nao chegou a um final/creditos no tempo limite. Ultimo estado: ${JSON.stringify(lastState)}`
+  190 |     ).toBe(true);
+  191 | 
+  192 |     expect(
+  193 |         loadedImageUrls.size,
+  194 |         `Poucas imagens carregadas na rota completa (${loadedImageUrls.size})`
+  195 |     ).toBeGreaterThan(20);
+  196 | 
+  197 |     expect(
+  198 |         loadedAudioUrls.size,
+  199 |         `Poucos audios carregados na rota completa (${loadedAudioUrls.size})`
+  200 |     ).toBeGreaterThan(2);
+  201 | 
+  202 |     expect(pageErrors, `Erros de runtime: ${JSON.stringify(pageErrors)}`).toEqual([]);
+  203 |     expect(
+  204 |         failedMediaRequests,
+  205 |         `Falhas de request de midia: ${JSON.stringify(failedMediaRequests)}`
+  206 |     ).toEqual([]);
+  207 |     expect(
+  208 |         badMediaResponses,
+  209 |         `Midias com status >= 400: ${JSON.stringify(badMediaResponses)}`
+  210 |     ).toEqual([]);
+  211 | });
+  212 | 
 ```

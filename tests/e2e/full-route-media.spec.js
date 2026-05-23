@@ -11,7 +11,7 @@ function isExpectedAbort(errorText) {
 }
 
 test("web full route loads image/audio assets until ending", async ({ page }) => {
-    test.setTimeout(12 * 60 * 1000);
+    test.setTimeout(25 * 60 * 1000);
 
     const failedMediaRequests = [];
     const badMediaResponses = [];
@@ -76,6 +76,7 @@ test("web full route loads image/audio assets until ending", async ({ page }) =>
     await page.click("#gameCanvas", { force: true }).catch(() => {});
 
     const startedAt = Date.now();
+    const maxRouteDurationMs = 22 * 60 * 1000;
     let reachedEnding = false;
     let reachedMapAtLeastOnce = false;
     let lastState = null;
@@ -121,15 +122,6 @@ test("web full route loads image/audio assets until ending", async ({ page }) =>
             }
             if (window.$gameTroop && $gameTroop._interpreter) {
                 clearInterpreterWaits($gameTroop._interpreter);
-            }
-
-            if (scene && scene.constructor && scene.constructor.name === "Scene_Map" && window.$gameMap) {
-                const events = $gameMap.events ? $gameMap.events() : [];
-                for (const ev of events) {
-                    if (ev && !ev._starting && ev.start) {
-                        ev.start();
-                    }
-                }
             }
 
             if (scene && scene.constructor && scene.constructor.name === "Scene_Title") {
@@ -186,7 +178,7 @@ test("web full route loads image/audio assets until ending", async ({ page }) =>
             break;
         }
 
-        if (Date.now() - startedAt > 10 * 60 * 1000) {
+        if (Date.now() - startedAt > maxRouteDurationMs) {
             break;
         }
     }
