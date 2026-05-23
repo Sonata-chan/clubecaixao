@@ -12,6 +12,7 @@ Hoje a suite automatizada cobre tres fluxos principais:
 4. Validacao de render web para imagens e tela preta nas rotas principais (title, map, pause, save e load).
 5. Fluxo de UI customizada de save/load com validacao de slots e acao de clique em slot.
 6. Fluxo de UI de escolhas VN com validacao de parametros visuais e callback.
+7. Rota completa automatizada ate final/creditos com auditoria de carregamento web de imagens e audios.
 
 Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 
@@ -27,6 +28,7 @@ Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 - `tests/e2e/web-build-render.spec.js`
 - `tests/e2e/save-load-ui.spec.js`
 - `tests/e2e/choices-ui.spec.js`
+- `tests/e2e/full-route-media.spec.js`
 
 ## Coverage Matrix
 
@@ -38,6 +40,7 @@ Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 | `web-build-render.spec.js` | Sim | Nao | Sim | Nao | Sim | Sim | Nao | Sim | Sim | title/map/pause/save/load |
 | `save-load-ui.spec.js` | Sim | Sim | Sim | Sim | Sim | Indireto | Nao | Parcial | Nao | title/save/load |
 | `choices-ui.spec.js` | Sim | Nao | Nao | Nao | Nao | Nao | Sim | Nao | Nao | title + janela choices |
+| `full-route-media.spec.js` | Sim | Nao | Nao | Nao | Nao | Nao | Parcial | Sim | Parcial | title ate final/creditos |
 
 ## Como a Infraestrutura Funciona
 
@@ -128,6 +131,55 @@ Os argumentos mais importantes sao:
 Eles existem para tornar o renderer do jogo estavel no browser headless.
 
 ## Cobertura Exata dos Testes
+
+## Preload Manual de Midia (Web)
+
+Para reduzir flicker de imagem e atraso de audio em export web, o projeto agora inclui dois plugins:
+
+- `ImagePreloadFreefMZ`
+- `AudioPreloadFreefMZ`
+
+Ambos estao registrados no carregamento de plugins do jogo e expostos como comandos de evento no RPG Maker MZ.
+
+### Comando: Preload Images
+
+- Plugin command: `preload_images`
+- Parametro `folderSelect`: pasta sob `img/` (por exemplo `pictures`, `titles1`)
+- Parametro `names`: lista separada por virgula, sem extensao
+
+Exemplo:
+
+```text
+folderSelect: pictures
+names: aviso_01,aviso_02,aviso_03
+```
+
+### Comando: Preload Audios
+
+- Plugin command: `preload_audios`
+- Parametro `folderSelect`: pasta sob `audio/` (`se`, `me`, `bgs`, `bgm`)
+- Parametro `names`: lista separada por virgula, sem extensao
+- Regra: `se` tenta download completo; demais pastas fazem preload parcial dos primeiros 500kb
+
+Exemplo:
+
+```text
+folderSelect: bgm
+names: bgm_theme_something_happening_at_the_cemetery
+```
+
+### Estrategia de Uso
+
+- Precarregar de 1 a 4 assets por vez.
+- Disparar preload alguns eventos antes do uso real.
+- Evitar rajadas grandes de preload junto de troca de trilha/efeito para nao disputar banda.
+
+### Validacao Recomendada
+
+- Servir build por HTTP local (nao usar `file://`).
+- Abrir DevTools > Network.
+- Aplicar throttle (Slow 4G ou 3G) para reproduzir condicoes reais.
+- Verificar se os requests dos assets criticos acontecem antes do frame em que sao exibidos/tocados.
 
 ## `boot.spec.js`
 
