@@ -12,7 +12,7 @@ Hoje a suite automatizada cobre tres fluxos principais:
 4. Validacao de render web para imagens e tela preta nas rotas principais (title, map, pause, save e load).
 5. Fluxo de UI customizada de save/load com validacao de slots e acao de clique em slot.
 6. Fluxo de UI de escolhas VN com validacao de parametros visuais e callback.
-7. Rota completa automatizada ate final/creditos com auditoria de carregamento web de imagens e audios.
+7. Validacao de render web para detectar imagens quebradas e tela preta nas rotas principais.
 
 Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 
@@ -22,13 +22,13 @@ Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 - `playwright.config.js`
 - `js/main.js`
 - `js/plugins/automation-test-harness.js`
+- `js/plugins/WebDeployHardeningMZ.js`
 - `tests/e2e/boot.spec.js`
 - `tests/e2e/save-load.spec.js`
 - `tests/e2e/pause-menu.spec.js`
 - `tests/e2e/web-build-render.spec.js`
 - `tests/e2e/save-load-ui.spec.js`
 - `tests/e2e/choices-ui.spec.js`
-- `tests/e2e/full-route-media.spec.js`
 
 ## Coverage Matrix
 
@@ -40,7 +40,6 @@ Os testes ficam em `tests/e2e` e usam a configuracao de `playwright.config.js`.
 | `web-build-render.spec.js` | Sim | Nao | Sim | Nao | Sim | Sim | Nao | Sim | Sim | title/map/pause/save/load |
 | `save-load-ui.spec.js` | Sim | Sim | Sim | Sim | Sim | Indireto | Nao | Parcial | Nao | title/save/load |
 | `choices-ui.spec.js` | Sim | Nao | Nao | Nao | Nao | Nao | Sim | Nao | Nao | title + janela choices |
-| `full-route-media.spec.js` | Sim | Nao | Nao | Nao | Nao | Nao | Parcial | Sim | Parcial | title ate final/creditos |
 
 ## Como a Infraestrutura Funciona
 
@@ -152,6 +151,30 @@ Esse plugin faz:
 1. preload da imagem de `img/pictures`;
 2. tentativa de upload da `baseTexture` no renderer PIXI;
 3. `Show Picture` apenas depois do warmup (quando configurado para aguardar).
+
+## Hardening Web Para Itch.io
+
+O projeto agora inclui:
+
+- `WebDeployHardeningMZ`
+
+Medidas aplicadas:
+
+1. `assetVersion` para cache-busting de imagens, audios e JSON de data.
+2. Detecao de `webglcontextlost` com auto-reload opcional para evitar tela preta permanente.
+3. Logs de eventos de hardening no console (`[WEB-HARDEN]`).
+
+### Como usar no upload
+
+Antes de subir uma nova build web, altere o parametro `assetVersion` do plugin para um valor novo.
+
+Exemplo:
+
+```text
+2026-05-23b
+```
+
+Isso força os clientes a baixarem os assets atualizados em vez de reutilizar cache antigo do CDN/browser.
 
 ### Comando: Warmup Pictures
 
@@ -489,6 +512,18 @@ Ou equivalente:
 npx playwright test
 ```
 
+## Rodar local com renderizacao visivel e log em arquivo
+
+Suite completa local (headed + xvfb + log):
+
+```sh
+npm run test:e2e:local
+```
+
+Saida persistida em:
+
+- `test_output.txt`
+
 ## Rodar um teste especifico
 
 Boot:
@@ -662,6 +697,19 @@ Rodar com UI visivel:
 ```sh
 npm run test:e2e:headed
 ```
+
+Abrir ambiente de teste manual (sem rodar specs automatizadas):
+
+```sh
+npm run test:e2e:manual
+```
+
+Esse comando:
+
+1. sobe o servidor local na porta `8000`;
+2. abre o Chromium via Playwright em `index.html?testMode=1&testCase=manual`;
+3. nao executa nenhum teste automatizado;
+4. encerra o servidor automaticamente quando voce fecha o navegador.
 
 Rodar um arquivo especifico:
 

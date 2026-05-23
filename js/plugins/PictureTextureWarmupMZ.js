@@ -1,7 +1,7 @@
 /*:
  * @target MZ
  * @author Copilot
- * @help Version 1.1.0.
+ * @help Version 1.2.0.
  *
  * Preloads picture bitmaps and warms up PIXI/GPU textures before Show Picture,
  * reducing the chance of first-frame blank sprites in web builds.
@@ -134,6 +134,9 @@
 (() => {
     const PLUGIN_NAME = "PictureTextureWarmupMZ";
     const AUTO_TRIM_KEEP_LAST = 12;
+    const DEBUG_RENDER = true;
+    const DEBUG_TARGET_PICTURES = new Set(["cen034"]);
+    const DEBUG_PREFIX = "[PTW-DIAG]";
     const warmupCache = new Map();
     const pendingWarmups = new Set();
     const trackedPictureNames = [];
@@ -147,6 +150,26 @@
         }
         return _Game_Interpreter_updateWaitMode.call(this);
     };
+
+    function shouldDebugPicture(name) {
+        if (!DEBUG_RENDER) {
+            return false;
+        }
+        const key = String(name || "").trim();
+        return !!key && DEBUG_TARGET_PICTURES.has(key);
+    }
+
+    function diag(name, pictureId, message, extra) {
+        if (!shouldDebugPicture(name)) {
+            return;
+        }
+        const idText = Number.isFinite(Number(pictureId)) ? " id=" + Number(pictureId) : "";
+        if (extra !== undefined) {
+            console.log(`${DEBUG_PREFIX}${idText} ${name}: ${message}`, extra);
+        } else {
+            console.log(`${DEBUG_PREFIX}${idText} ${name}: ${message}`);
+        }
+    }
 
     function parseNames(csv) {
         return String(csv || "")
@@ -346,13 +369,22 @@
 
         const promise = (async () => {
             pendingWarmups.add(key);
+            diag(key, NaN, "warmup start");
             const bitmap = ImageManager.loadPicture(key);
             const ready = await waitBitmapReady(bitmap);
             if (!ready) {
+                diag(key, NaN, "warmup failed: bitmap not ready");
                 return false;
             }
             trackPicture(key);
-            return guaranteeBitmapRendered(bitmap);
+            const forced = await guaranteeBitmapRendered(bitmap);
+            diag(key, NaN, "warmup done", {
+                forced,
+                width: bitmap.width,
+                height: bitmap.height,
+                baseValid: !!(bitmap.baseTexture && bitmap.baseTexture.valid)
+            });
+            return forced;
         })().finally(() => {
             pendingWarmups.delete(key);
         })();
@@ -380,6 +412,75 @@
         }
     }
 
+    function forceSpriteBitmapRefresh(sprite, expectedName) {
+        if (!sprite || !sprite.bitmap || !sprite.bitmap.isReady()) {
+            return;
+        }
+
+        const picture = sprite.picture && sprite.picture();
+        if (!picture || picture.name() !== expectedName) {
+            return;
+        }
+
+        // Force a texture/frame rebuild on the actual displayed Sprite_Picture.
+        sprite._onBitmapChange();
+        sprite._refresh();
+        if (sprite.bitmap.width > 0 && sprite.bitmap.height > 0) {
+            sprite.setFrame(0, 0, sprite.bitmap.width, sprite.bitmap.height);
+        }
+        sprite.visible = true;
+        diag(expectedName, sprite._pictureId, "force sprite refresh applied", {
+            visible: sprite.visible,
+            opacity: sprite.opacity,
+            bitmapReady: !!(sprite.bitmap && sprite.bitmap.isReady && sprite.bitmap.isReady()),
+            bitmapW: sprite.bitmap ? sprite.bitmap.width : null,
+            bitmapH: sprite.bitmap ? sprite.bitmap.height : null,
+            texValid: !!(sprite.texture && sprite.texture.baseTexture && sprite.texture.baseTexture.valid),
+            frameW: sprite.texture && sprite.texture.frame ? sprite.texture.frame.width : null,
+            frameH: sprite.texture && sprite.texture.frame ? sprite.texture.frame.height : null
+        });
+    }
+
+    function findPictureSpriteById(pictureId) {
+        const scene = SceneManager && SceneManager._scene;
+        const spriteset = scene && scene._spriteset;
+        const container = spriteset && spriteset._pictureContainer;
+        if (!container || !container.children) {
+            return null;
+        }
+        return container.children.find(child => child && child._pictureId === pictureId) || null;
+    }
+
+    function schedulePictureSpriteRefresh(pictureId, expectedName, attempt = 0) {
+        const sprite = findPictureSpriteById(pictureId);
+        if (!sprite || !sprite.bitmap || !sprite.bitmap.isReady()) {
+            if (attempt === 0 || attempt % 15 === 0) {
+                diag(expectedName, pictureId, "sprite not ready yet", {
+                    attempt,
+                    hasSprite: !!sprite,
+                    hasBitmap: !!(sprite && sprite.bitmap),
+                    bitmapReady: !!(sprite && sprite.bitmap && sprite.bitmap.isReady && sprite.bitmap.isReady())
+                });
+            }
+            if (attempt < 90) {
+                setTimeout(() => schedulePictureSpriteRefresh(pictureId, expectedName, attempt + 1), 16);
+            } else {
+                diag(expectedName, pictureId, "sprite refresh timeout after retries");
+            }
+            return;
+        }
+
+        diag(expectedName, pictureId, "sprite found ready, forcing upload");
+        guaranteeBitmapRendered(sprite.bitmap)
+            .catch(error => {
+                console.warn("PictureTextureWarmupMZ sprite upload retry error:", expectedName, error);
+                return false;
+            })
+            .finally(() => {
+                forceSpriteBitmapRefresh(sprite, expectedName);
+            });
+    }
+
     function scheduleAutoShowPicture(screen, pictureArgs, options = {}) {
         const pictureId = Number(pictureArgs[0] || 0);
         const name = String(pictureArgs[1] || "").trim();
@@ -391,6 +492,8 @@
             finalizeInterpreterWarmup(interpreter);
             return Promise.resolve(false);
         }
+
+        diag(name, pictureId, "scheduleAutoShowPicture");
 
         const previousName = currentPictureName(pictureId);
         const requestToken = nextPictureToken(pictureId);
@@ -407,12 +510,15 @@
             })
             .finally(() => {
                 if (!isLatestPictureToken(pictureId, requestToken)) {
+                    diag(name, pictureId, "discarded by newer request token");
                     finalizeInterpreterWarmup(interpreter);
                     return;
                 }
 
                 trackPicture(name);
                 showPictureNow(screen, pictureArgs);
+                diag(name, pictureId, "showPictureNow executed");
+                schedulePictureSpriteRefresh(pictureId, name);
 
                 if (previousName && previousName !== name) {
                     releasePicture(previousName);
@@ -422,6 +528,40 @@
                 finalizeInterpreterWarmup(interpreter);
             });
     }
+
+    const _Sprite_Picture_updateBitmap = Sprite_Picture.prototype.updateBitmap;
+    Sprite_Picture.prototype.updateBitmap = function() {
+        _Sprite_Picture_updateBitmap.call(this);
+
+        const picture = this.picture();
+        if (!picture || !this.bitmap || !this.bitmap.isReady()) {
+            return;
+        }
+
+        const pictureName = String(picture.name() || "").trim();
+        if (!pictureName) {
+            return;
+        }
+
+        if (
+            this._ptwLastRenderedName === pictureName &&
+            this._ptwLastRenderedBitmap === this.bitmap
+        ) {
+            return;
+        }
+
+        this._ptwLastRenderedName = pictureName;
+        this._ptwLastRenderedBitmap = this.bitmap;
+
+        guaranteeBitmapRendered(this.bitmap)
+            .catch(error => {
+                console.warn("PictureTextureWarmupMZ sprite warmup error:", pictureName, error);
+                return false;
+            })
+            .finally(() => {
+                forceSpriteBitmapRefresh(this, pictureName);
+            });
+    };
 
     Game_Screen.prototype.showPicture = function(
         pictureId, name, origin, x, y, scaleX, scaleY, opacity, blendMode
@@ -442,7 +582,29 @@
             return _Game_Screen_showPicture.apply(this, pictureArgs);
         }
 
-        scheduleAutoShowPicture(this, pictureArgs, { waitForWarmup: false });
+        _Game_Screen_showPicture.apply(this, pictureArgs);
+
+        const normalizedName = String(name || "").trim();
+        if (!normalizedName) {
+            return;
+        }
+
+        diag(normalizedName, pictureId, "global showPicture hook executed");
+
+        const requestToken = nextPictureToken(Number(pictureId || 0));
+        warmupPicture(normalizedName)
+            .catch(error => {
+                console.warn("PictureTextureWarmupMZ background warmup error:", normalizedName, error);
+                return false;
+            })
+            .finally(() => {
+                if (!isLatestPictureToken(Number(pictureId || 0), requestToken)) {
+                    diag(normalizedName, pictureId, "global hook discarded by newer request token");
+                    return;
+                }
+                trackPicture(normalizedName);
+                schedulePictureSpriteRefresh(Number(pictureId || 0), normalizedName);
+            });
     };
 
     Game_Screen.prototype.erasePicture = function(pictureId) {

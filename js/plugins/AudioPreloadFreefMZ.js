@@ -34,7 +34,32 @@
 
 (() => {
     const PLUGIN_NAME = "AudioPreloadFreefMZ";
-    const PARTIAL_PRELOAD_BYTES = 500 * 1024;
+    const PARTIAL_PRELOAD_BYTES = 256 * 1024;
+    const MAX_CONCURRENT = 1;
+    const REQUEST_GAP_MS = 150;
+    const preloadQueue = [];
+    let activePreloads = 0;
+
+    function runQueue() {
+        while (activePreloads < MAX_CONCURRENT && preloadQueue.length > 0) {
+            const task = preloadQueue.shift();
+            activePreloads += 1;
+
+            task()
+                .catch(error => {
+                    console.warn("AudioPreloadFreefMZ task error:", error);
+                })
+                .finally(() => {
+                    activePreloads -= 1;
+                    setTimeout(runQueue, REQUEST_GAP_MS);
+                });
+        }
+    }
+
+    function enqueuePreload(task) {
+        preloadQueue.push(task);
+        runQueue();
+    }
 
     async function preloadAudio(filePath, fullDownload) {
         const controller = new AbortController();
@@ -90,7 +115,7 @@
         for (const name of names) {
             const filePath = "audio/" + folder + "/" + name + ".ogg";
             const fullDownload = folder === "se";
-            preloadAudio(filePath, fullDownload);
+            enqueuePreload(() => preloadAudio(filePath, fullDownload));
         }
     });
 })();

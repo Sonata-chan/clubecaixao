@@ -40,6 +40,45 @@
 
 (() => {
     const PLUGIN_NAME = "ImagePreloadFreefMZ";
+    const MAX_CONCURRENT = 2;
+    const REQUEST_GAP_MS = 120;
+    const preloadQueue = [];
+    let activePreloads = 0;
+
+    function waitBitmapReady(bitmap) {
+        return new Promise(resolve => {
+            if (!bitmap) {
+                resolve(false);
+                return;
+            }
+            if (bitmap.isReady()) {
+                resolve(true);
+                return;
+            }
+            bitmap.addLoadListener(() => resolve(bitmap.isReady()));
+        });
+    }
+
+    function runQueue() {
+        while (activePreloads < MAX_CONCURRENT && preloadQueue.length > 0) {
+            const task = preloadQueue.shift();
+            activePreloads += 1;
+
+            task()
+                .catch(error => {
+                    console.warn("ImagePreloadFreefMZ preload error:", error);
+                })
+                .finally(() => {
+                    activePreloads -= 1;
+                    setTimeout(runQueue, REQUEST_GAP_MS);
+                });
+        }
+    }
+
+    function enqueuePreload(task) {
+        preloadQueue.push(task);
+        runQueue();
+    }
 
     PluginManager.registerCommand(PLUGIN_NAME, "preload_images", args => {
         const folder = String(args.folderSelect || "pictures");
@@ -50,7 +89,10 @@
             .filter(Boolean);
 
         for (const name of names) {
-            ImageManager.loadBitmap(basePath, name, 0, true);
+            enqueuePreload(async () => {
+                const bitmap = ImageManager.loadBitmap(basePath, name, 0, true);
+                await waitBitmapReady(bitmap);
+            });
         }
     });
 })();

@@ -54,6 +54,7 @@
 
     window.__CLUBECAIXAO_TEST__ = harness;
     window.__clubeTest = harness;
+    const forceGraphicsFallback = searchParams.get("graphicsFallback") === "1";
 
     harness.startNewGame = function() {
         DataManager.setupNewGame();
@@ -137,6 +138,22 @@
     };
 
     Graphics._createPixiApp = function() {
+        if (!forceGraphicsFallback && typeof originalCreatePixiApp === "function") {
+            try {
+                originalCreatePixiApp.call(this);
+                if (this._app && this._app.renderer) {
+                    harness.mark("graphics-native-pixi-ok", {
+                        rendererType: this._app.renderer.type
+                    });
+                    return;
+                }
+            } catch (error) {
+                harness.fail("graphics-native-pixi-failed", {
+                    message: error.message
+                });
+            }
+        }
+
         try {
             this._setupPixi();
             const renderer = new PIXI.Renderer({
@@ -186,6 +203,8 @@
                     renderer.render(stage);
                 }
             };
+
+            harness.mark("graphics-fallback-pixi-ok");
         } catch (error) {
             harness.fail("graphics-app-init", {
                 message: error.message
@@ -195,6 +214,20 @@
     };
 
     Graphics._createEffekseerContext = function() {
+        if (!forceGraphicsFallback && typeof originalCreateEffekseerContext === "function") {
+            try {
+                originalCreateEffekseerContext.call(this);
+                harness.mark("graphics-native-effekseer-ok", {
+                    enabled: !!this._effekseer
+                });
+                return;
+            } catch (error) {
+                harness.fail("graphics-native-effekseer-failed", {
+                    message: error.message
+                });
+            }
+        }
+
         if (this._app && this._app.renderer && this._app.renderer.gl && window.effekseer) {
             try {
                 this._effekseer = effekseer.createContext();
@@ -215,6 +248,7 @@
     };
 
     harness.mark("graphics-fallback-enabled", {
+        forceGraphicsFallback,
         originalCreatePixiApp: typeof originalCreatePixiApp === "function",
         originalCreateEffekseerContext: typeof originalCreateEffekseerContext === "function"
     });

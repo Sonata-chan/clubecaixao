@@ -1,7 +1,24 @@
 const { defineConfig } = require("@playwright/test");
 
+const useSwiftShader = process.env.PW_USE_SWIFTSHADER !== "0";
+
+const chromiumArgs = [
+    "--enable-webgl",
+    "--ignore-gpu-blocklist",
+    "--disable-dev-shm-usage",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-backgrounding-occluded-windows"
+];
+
+if (useSwiftShader) {
+    chromiumArgs.push("--use-gl=swiftshader", "--enable-unsafe-swiftshader");
+}
+
 module.exports = defineConfig({
     testDir: "./tests/e2e",
+    workers: 1,
+    fullyParallel: false,
     timeout: 60000,
     expect: {
         timeout: 10000
@@ -12,13 +29,7 @@ module.exports = defineConfig({
         screenshot: "only-on-failure",
         baseURL: "http://127.0.0.1:8000",
         launchOptions: {
-            args: [
-                "--enable-webgl",
-                "--ignore-gpu-blocklist",
-                "--use-gl=swiftshader",
-                "--enable-unsafe-swiftshader",
-                "--disable-dev-shm-usage"
-            ]
+            args: chromiumArgs
         },
         viewport: {
             width: 816,
