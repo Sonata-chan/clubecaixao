@@ -141,6 +141,40 @@ Para reduzir flicker de imagem e atraso de audio em export web, o projeto agora 
 
 Ambos estao registrados no carregamento de plugins do jogo e expostos como comandos de evento no RPG Maker MZ.
 
+## Warmup de Textura GPU para Show Picture
+
+Para o caso de WebGL em que o arquivo ja baixou, mas o sprite ainda pode falhar no primeiro frame, o projeto agora inclui:
+
+- `PictureTextureWarmupMZ`
+
+Esse plugin faz:
+
+1. preload da imagem de `img/pictures`;
+2. tentativa de upload da `baseTexture` no renderer PIXI;
+3. `Show Picture` apenas depois do warmup (quando configurado para aguardar).
+
+### Comando: Warmup Pictures
+
+- Plugin command: `warmup_pictures`
+- Parametro `names`: lista separada por virgula, sem extensao
+
+Exemplo:
+
+```text
+names: cenario_cemiterio,cenario_quarto,cenario_rua
+```
+
+### Comando: Show Picture After Warmup
+
+- Plugin command: `show_picture_after_warmup`
+- Executa o equivalente ao `Show Picture` nativo, mas so depois do warmup da imagem.
+- Parametro `waitForWarmup`: recomendado `true` para evitar corrida de render.
+
+Uso recomendado em evento:
+
+1. Chamar `warmup_pictures` com a proxima imagem alguns comandos antes.
+2. No momento de trocar cenario, usar `show_picture_after_warmup` com `waitForWarmup=true`.
+
 ### Comando: Preload Images
 
 - Plugin command: `preload_images`

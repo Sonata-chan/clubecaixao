@@ -12,6 +12,7 @@ var $plugins =
 {"name":"saveload","status":true,"description":"Sistema Save/Load VN Visual Custom","parameters":{"saveBackground":"save_bg","slotImage":"save_slot","slotHoverImage":"save_slot_hover","closeButtonImage":"save_close","closeButtonHoverImage":"save_close_hover","nextButtonImage":"save_next","prevButtonImage":"save_prev","fontFace":"rmmz-mainfont","fontSize":"18","dayVariableId":"12"}},
 {"name":"ImagePreloadFreefMZ","status":true,"description":"Preload specified images into local device cache for later use","parameters":{}},
 {"name":"AudioPreloadFreefMZ","status":true,"description":"Preload specified audio files into browser cache for later use","parameters":{}},
+{"name":"PictureTextureWarmupMZ","status":true,"description":"Warm up picture textures on GPU before Show Picture","parameters":{}},
 {"name":"VN_AutoColorWords","status":true,"description":"Colore automaticamente palavras específicas.","parameters":{"coloredWords":"[\"{\\\"word\\\":\\\"   Você\\\",\\\"colorId\\\":\\\"2\\\"}\"]"}},
 {"name":"MOG_TouchAnimation","status":true,"description":"(v1.0) Apresenta uma animação de toque.","parameters":{"File Name":"TouchParticles","Animation":"Fireworks","Number of Particles":"10","X-Axis Offset":"0","Y-Axis Offset":"0","Blend Mode":"Normal","Duration":"10","Fade Speed":"20","Random Tone":"true"}}
 ];
