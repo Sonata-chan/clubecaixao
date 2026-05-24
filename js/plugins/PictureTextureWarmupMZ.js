@@ -395,7 +395,6 @@
 
     const _Game_Screen_showPicture = Game_Screen.prototype.showPicture;
     const _Game_Screen_erasePicture = Game_Screen.prototype.erasePicture;
-    const _Game_Interpreter_command231 = Game_Interpreter.prototype.command231;
 
     function showPictureNow(screen, pictureArgs) {
         bypassAutoShowPicture = true;
@@ -598,38 +597,13 @@
             })
             .finally(() => {
                 trackPicture(normalizedName);
+                trimTrackedPictures(AUTO_TRIM_KEEP_LAST, [normalizedName]);
             });
     };
 
     Game_Screen.prototype.erasePicture = function(pictureId) {
-        const previousName = currentPictureName(pictureId);
         nextPictureToken(pictureId);
         _Game_Screen_erasePicture.call(this, pictureId);
-        if (previousName) {
-            releasePicture(previousName);
-        }
-        trimTrackedPictures(AUTO_TRIM_KEEP_LAST, []);
-    };
-
-    Game_Interpreter.prototype.command231 = function(params) {
-        const point = this.picturePoint(params);
-        const pictureArgs = [
-            params[0],
-            params[1],
-            params[2],
-            point.x,
-            point.y,
-            params[6],
-            params[7],
-            params[8],
-            params[9]
-        ];
-
-        scheduleAutoShowPicture($gameScreen, pictureArgs, {
-            interpreter: this,
-            waitForWarmup: true
-        });
-        return true;
     };
 
     PluginManager.registerCommand(PLUGIN_NAME, "warmup_pictures", args => {
