@@ -15,3 +15,6 @@ desktop.ini
 # (Only ignore if you manage assets separately or use LFS)
 # img/
 # audio/
+
+test_output_cen034.txt
+test_output.txt

@@ -173,6 +173,34 @@
         }
     }
 
+    function reloadMapIfUpdated() {
+
+        if ($gameSystem.versionId() !== $dataSystem.versionId) {
+
+            const mapId =
+                $gameMap.mapId();
+
+            const x =
+                $gamePlayer.x;
+
+            const y =
+                $gamePlayer.y;
+
+            const d =
+                $gamePlayer.direction();
+
+            $gamePlayer.reserveTransfer(
+                mapId,
+                x,
+                y,
+                d,
+                0
+            );
+
+            $gamePlayer.requestMapReload();
+        }
+    }
+
     
     //==================================================
     // BASE
@@ -830,12 +858,19 @@ class Scene_VNSave
 
     onSlotClick(slotId) {
 
+        $gameSystem.setSavefileId(slotId);
+        $gameSystem.onBeforeSave();
+
         DataManager.saveGame(slotId)
         .then(() => {
 
         SoundManager.playSave();
 
         returnToOriginScene();
+        })
+        .catch(() => {
+
+        SoundManager.playBuzzer();
         });
     }
 }
@@ -878,11 +913,18 @@ class Scene_VNLoad
         DataManager.loadGame(slotId)
         .then(() => {
 
+            $gameSystem.onAfterLoad();
+
+            reloadMapIfUpdated();
+
             // Evita restos de Scene_Title/Scene_CustomPause na pilha.
             SceneManager.clearStack();
 
             SceneManager.goto(Scene_Map);
+        })
+        .catch(() => {
 
+            SoundManager.playBuzzer();
         });
     }
 }

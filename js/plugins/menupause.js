@@ -129,6 +129,55 @@
     const PAUSE_BUTTON_SWITCH =
         Number(params.pauseButtonSwitch);
 
+    AudioManager._muted =
+        AudioManager._muted || false;
+
+    AudioManager._savedMasterVolume =
+        AudioManager._savedMasterVolume ?? 1;
+
+    function applyMutedState() {
+
+        if (AudioManager._muted) {
+            WebAudio.setMasterVolume(0);
+        } else {
+            WebAudio.setMasterVolume(
+                AudioManager._savedMasterVolume ?? 1
+            );
+        }
+    }
+
+    const _Game_System_onBeforeSave =
+        Game_System.prototype.onBeforeSave;
+
+    Game_System.prototype.onBeforeSave =
+    function() {
+
+        _Game_System_onBeforeSave.call(this);
+
+        this._vnMuted =
+            !!AudioManager._muted;
+
+        this._vnSavedMasterVolume =
+            AudioManager._savedMasterVolume ?? 1;
+    };
+
+    const _Game_System_onAfterLoad =
+        Game_System.prototype.onAfterLoad;
+
+    Game_System.prototype.onAfterLoad =
+    function() {
+
+        _Game_System_onAfterLoad.call(this);
+
+        AudioManager._muted =
+            !!this._vnMuted;
+
+        AudioManager._savedMasterVolume =
+            this._vnSavedMasterVolume ?? 1;
+
+        applyMutedState();
+    };
+
     window._pauseMenuRequested = false;
     window._vnPauseMenuActive = false;
 
@@ -454,41 +503,17 @@ function() {
 
     if (!AudioManager._muted) {
 
-        AudioManager._savedBgmVolume =
-            AudioManager.bgmVolume;
-
-        AudioManager._savedBgsVolume =
-            AudioManager.bgsVolume;
-
-        AudioManager._savedMeVolume =
-            AudioManager.meVolume;
-
-        AudioManager._savedSeVolume =
-            AudioManager.seVolume;
-
-        WebAudio.setMasterVolume(0);
-        AudioManager.bgsVolume = 0;
-        AudioManager.meVolume = 0;
-        AudioManager.seVolume = 0;
+        AudioManager._savedMasterVolume =
+            WebAudio._masterVolume ?? 1;
 
         AudioManager._muted = true;
 
     } else {
 
-        AudioManager.bgmVolume =
-            AudioManager._savedBgmVolume ?? 100;
-
-        AudioManager.bgsVolume =
-            AudioManager._savedBgsVolume ?? 100;
-
-        AudioManager.meVolume =
-            AudioManager._savedMeVolume ?? 100;
-
-        AudioManager.seVolume =
-            AudioManager._savedSeVolume ?? 100;
-
         AudioManager._muted = false;
     }
+
+    applyMutedState();
 
     //==========================================
     // REMOVE BOTÕES ANTIGOS
