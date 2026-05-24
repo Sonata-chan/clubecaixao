@@ -700,10 +700,14 @@ function() {
             return;
         }
 
-        const enabled =
+        const enabledBySwitch =
         $gameSwitches.value(
             PAUSE_BUTTON_SWITCH
         );
+
+        const enabled =
+            enabledBySwitch ||
+            canOpenPauseFromChoice(this);
 
         if (enabled) {
 

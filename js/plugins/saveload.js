@@ -158,6 +158,7 @@
     //==================================================
 
     window._vnFileOpenOrigin = null;
+    window._vnPendingRestore = null;
 
     function returnToOriginScene() {
 
@@ -200,6 +201,346 @@
             $gamePlayer.requestMapReload();
         }
     }
+
+    function findMessageWaitingInterpreter(
+        interpreter,
+        expectedEventId = null
+    ) {
+
+        if (!interpreter) {
+            return null;
+        }
+
+        let fallback = null;
+
+        const visit = current => {
+
+            if (!current) {
+                return null;
+            }
+
+            if (current._waitMode === "message") {
+
+                if (
+                    expectedEventId == null ||
+                    current._eventId === expectedEventId
+                ) {
+                    return current;
+                }
+
+                fallback = fallback || current;
+            }
+
+            return visit(current._childInterpreter);
+        };
+
+        return visit(interpreter) || fallback;
+    }
+
+    function captureChoiceRestoreState() {
+
+        if (!$gameMessage || !$gameMessage.isChoice()) {
+            return null;
+        }
+
+        const interpreter =
+            findMessageWaitingInterpreter(
+                $gameMap && $gameMap._interpreter
+            );
+
+        if (!interpreter) {
+            return { valid: false };
+        }
+
+        return {
+            valid: true,
+            mapId: $gameMap ? $gameMap.mapId() : 0,
+            eventId: interpreter._eventId || 0,
+            indent: interpreter._indent
+        };
+    }
+
+    function captureMessageRestoreState() {
+
+        if (!$gameMessage || !$gameMessage.isBusy()) {
+            return null;
+        }
+
+        return {
+            texts: ($gameMessage._texts || []).slice(),
+            speakerName: $gameMessage.speakerName(),
+            faceName: $gameMessage.faceName(),
+            faceIndex: $gameMessage.faceIndex(),
+            background: $gameMessage.background(),
+            positionType: $gameMessage.positionType(),
+            choices: ($gameMessage.choices() || []).slice(),
+            choiceDefaultType: $gameMessage.choiceDefaultType(),
+            choiceCancelType: $gameMessage.choiceCancelType(),
+            choiceBackground: $gameMessage.choiceBackground(),
+            choicePositionType: $gameMessage.choicePositionType(),
+            numInputVariableId: $gameMessage.numInputVariableId(),
+            numInputMaxDigits: $gameMessage.numInputMaxDigits(),
+            itemChoiceVariableId: $gameMessage.itemChoiceVariableId(),
+            itemChoiceItypeId: $gameMessage.itemChoiceItypeId(),
+            scrollMode: $gameMessage.scrollMode(),
+            scrollSpeed: $gameMessage.scrollSpeed(),
+            scrollNoFast: $gameMessage.scrollNoFast()
+        };
+    }
+
+    function restoreMessageState(state) {
+
+        if (!$gameMessage || !state) {
+            return;
+        }
+
+        $gameMessage.clear();
+
+        const texts = state.texts || [];
+        for (const text of texts) {
+            $gameMessage.add(text);
+        }
+
+        $gameMessage.setSpeakerName(state.speakerName || "");
+        $gameMessage.setFaceImage(state.faceName || "", Number(state.faceIndex || 0));
+        $gameMessage.setBackground(Number(state.background || 0));
+        $gameMessage.setPositionType(Number(state.positionType || 2));
+
+        const choices = state.choices || [];
+        if (choices.length > 0) {
+            $gameMessage.setChoices(
+                choices,
+                Number(state.choiceDefaultType ?? 0),
+                Number(state.choiceCancelType ?? 0)
+            );
+            $gameMessage.setChoiceBackground(Number(state.choiceBackground || 0));
+            $gameMessage.setChoicePositionType(Number(state.choicePositionType || 2));
+        }
+
+        if (Number(state.numInputVariableId || 0) > 0) {
+            $gameMessage.setNumberInput(
+                Number(state.numInputVariableId),
+                Number(state.numInputMaxDigits || 1)
+            );
+        }
+
+        if (Number(state.itemChoiceVariableId || 0) > 0) {
+            $gameMessage.setItemChoice(
+                Number(state.itemChoiceVariableId),
+                Number(state.itemChoiceItypeId || 1)
+            );
+        }
+
+        if (state.scrollMode) {
+            $gameMessage.setScroll(
+                Number(state.scrollSpeed || 2),
+                !!state.scrollNoFast
+            );
+        }
+
+        return true;
+    }
+
+    function buildChoiceBranchMap(interpreter, indent, displayedChoices) {
+
+        if (!interpreter || !interpreter._list || !Array.isArray(displayedChoices)) {
+            return null;
+        }
+
+        const original = [];
+        for (let i = interpreter._index; i < interpreter._list.length; i++) {
+
+            const cmd = interpreter._list[i];
+            if (!cmd) {
+                break;
+            }
+
+            if (cmd.indent < indent) {
+                break;
+            }
+
+            if (cmd.code === 404 && cmd.indent === indent) {
+                break;
+            }
+
+            if (cmd.code === 402 && cmd.indent === indent) {
+                original.push({
+                    index: Number(cmd.parameters && cmd.parameters[0]),
+                    text: String((cmd.parameters && cmd.parameters[1]) || "")
+                });
+            }
+        }
+
+        if (!original.length) {
+            return null;
+        }
+
+        const used = new Set();
+        const map = displayedChoices.map((choiceText, displayedIndex) => {
+
+            const text = String(choiceText || "");
+
+            let pick = original.findIndex(entry =>
+                !used.has(entry.index) && entry.text === text
+            );
+
+            if (pick < 0) {
+                pick = original.findIndex(entry =>
+                    !used.has(entry.index)
+                );
+            }
+
+            if (pick < 0) {
+                return displayedIndex;
+            }
+
+            used.add(original[pick].index);
+            return original[pick].index;
+        });
+
+        return map;
+    }
+
+    function restoreChoiceCallback(state) {
+
+        if (!$gameMessage || !$gameMessage.isChoice()) {
+            return false;
+        }
+
+        if (typeof $gameMessage._choiceCallback === "function") {
+            return true;
+        }
+
+        if (!state || state.valid === false) {
+            return false;
+        }
+
+        if (
+            state.mapId &&
+            $gameMap &&
+            $gameMap.mapId() !== state.mapId
+        ) {
+            return false;
+        }
+
+        const interpreter =
+            findMessageWaitingInterpreter(
+                $gameMap && $gameMap._interpreter,
+                state.eventId
+            );
+
+        if (!interpreter) {
+            return false;
+        }
+
+        const indent =
+            Number.isFinite(state.indent)
+                ? state.indent
+                : interpreter._indent;
+
+        const branchMap =
+            buildChoiceBranchMap(
+                interpreter,
+                indent,
+                $gameMessage.choices()
+            );
+
+        interpreter.setWaitMode("message");
+
+        $gameMessage.setChoiceCallback(n => {
+            if (branchMap && branchMap[n] != null) {
+                interpreter._branch[indent] = branchMap[n];
+            } else {
+                interpreter._branch[indent] = n;
+            }
+        });
+
+        return true;
+    }
+
+    function applyPendingRestoreIfPossible() {
+
+        const pending = window._vnPendingRestore;
+        if (!pending) {
+            return;
+        }
+
+        if (pending.message && !pending.messageApplied) {
+            restoreMessageState(pending.message);
+            pending.messageApplied = true;
+        }
+
+        const done = !pending.choice || restoreChoiceCallback(pending.choice);
+
+        if (done) {
+            window._vnPendingRestore = null;
+        }
+    }
+
+    const _VN_DataManager_makeSaveContents =
+        DataManager.makeSaveContents;
+
+    DataManager.makeSaveContents = function() {
+
+        const contents =
+            _VN_DataManager_makeSaveContents.call(this);
+
+        const choiceState =
+            captureChoiceRestoreState();
+
+        const messageState =
+            captureMessageRestoreState();
+
+        if (choiceState) {
+            contents._vnChoiceRestore = choiceState;
+        }
+
+        if (messageState) {
+            contents._vnMessageRestore = messageState;
+        }
+
+        return contents;
+    };
+
+    const _VN_DataManager_extractSaveContents =
+        DataManager.extractSaveContents;
+
+    DataManager.extractSaveContents =
+        function(contents) {
+
+        _VN_DataManager_extractSaveContents.call(
+            this,
+            contents
+        );
+
+        const restorePayload = {
+            message: contents && contents._vnMessageRestore,
+            choice: contents && contents._vnChoiceRestore,
+            messageApplied: false
+        };
+
+        window._vnPendingRestore = restorePayload;
+    };
+
+    const _VN_Scene_Map_start =
+        Scene_Map.prototype.start;
+
+    Scene_Map.prototype.start = function() {
+
+        _VN_Scene_Map_start.call(this);
+
+        applyPendingRestoreIfPossible();
+    };
+
+    const _VN_Scene_Map_update =
+        Scene_Map.prototype.update;
+
+    Scene_Map.prototype.update = function() {
+
+        applyPendingRestoreIfPossible();
+
+        _VN_Scene_Map_update.call(this);
+    };
 
     
     //==================================================
@@ -857,6 +1198,16 @@ class Scene_VNSave
     }
 
     onSlotClick(slotId) {
+
+        const choiceState =
+            captureChoiceRestoreState();
+
+        if (choiceState && choiceState.valid === false) {
+
+            SoundManager.playBuzzer();
+
+            return;
+        }
 
         $gameSystem.setSavefileId(slotId);
         $gameSystem.onBeforeSave();
