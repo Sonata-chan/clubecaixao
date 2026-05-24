@@ -194,6 +194,40 @@
         window._pauseMenuRequested = true;
     };
 
+    function canOpenPauseFromChoice(scene) {
+
+        const choiceWindow =
+            scene && scene._choiceListWindow;
+
+        return !!(
+            choiceWindow &&
+            choiceWindow.visible &&
+            choiceWindow.active
+        );
+    }
+
+    function canOpenCustomPauseMenu(scene) {
+
+        if (!(scene instanceof Scene_Map)) {
+            return false;
+        }
+
+        if (window._pauseMenuRequested) {
+            return false;
+        }
+
+        if (window._vnPauseMenuActive) {
+            return false;
+        }
+
+        if (SceneManager.isSceneChanging()) {
+            return false;
+        }
+
+        return scene.isMenuEnabled() ||
+            canOpenPauseFromChoice(scene);
+    }
+
     function Scene_CustomPause() {
         this.initialize(...arguments);
     }
@@ -559,6 +593,18 @@ function() {
     function() {
 
     _Scene_Map_update.call(this);
+
+    if (
+        (Input.isTriggered("menu") ||
+        Input.isTriggered("cancel")) &&
+        canOpenCustomPauseMenu(this)
+    ) {
+
+        window.openCustomPauseMenu();
+
+        TouchInput.clear();
+        Input.clear();
+    }
 
     if (
         window._pauseMenuRequested &&

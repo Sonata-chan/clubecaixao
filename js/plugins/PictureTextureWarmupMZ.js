@@ -313,6 +313,19 @@
         return uploaded || rendered;
     }
 
+    async function warmupNamedBitmap(loader, name) {
+        const key = String(name || "").trim();
+        if (!key) {
+            return false;
+        }
+        const bitmap = loader(key);
+        const ready = await waitBitmapReady(bitmap);
+        if (!ready) {
+            return false;
+        }
+        return guaranteeBitmapRendered(bitmap);
+    }
+
     function releasePicture(name) {
         const key = String(name || "").trim();
         if (!key || pendingWarmups.has(key) || activePictureNames().has(key)) {
@@ -653,4 +666,67 @@
             waitForWarmup
         });
     });
+
+    const _Game_Interpreter_command231 = Game_Interpreter.prototype.command231;
+    Game_Interpreter.prototype.command231 = function(params) {
+        if (!params) {
+            return _Game_Interpreter_command231.call(this, params);
+        }
+
+        const point = this.picturePoint(params);
+        scheduleAutoShowPicture($gameScreen, [
+            params[0],
+            params[1],
+            params[2],
+            point.x,
+            point.y,
+            params[6],
+            params[7],
+            params[8],
+            params[9]
+        ], {
+            interpreter: this,
+            waitForWarmup: true
+        });
+
+        return true;
+    };
+
+    const _Game_Interpreter_command322 = Game_Interpreter.prototype.command322;
+    Game_Interpreter.prototype.command322 = function(params) {
+        if (!params) {
+            return _Game_Interpreter_command322.call(this, params);
+        }
+
+        const actor = $gameActors.actor(params[0]);
+        if (!actor) {
+            return true;
+        }
+
+        const characterName = String(params[1] || "").trim();
+        const faceName = String(params[3] || "").trim();
+        const battlerName = String(params[5] || "").trim();
+
+        this._pictureTextureWarmupPending = true;
+        this.setWaitMode("pictureTextureWarmup");
+
+        Promise.all([
+            warmupNamedBitmap(ImageManager.loadCharacter.bind(ImageManager), characterName),
+            warmupNamedBitmap(ImageManager.loadFace.bind(ImageManager), faceName),
+            warmupNamedBitmap(ImageManager.loadSvActor.bind(ImageManager), battlerName)
+        ])
+            .catch(error => {
+                console.warn("PictureTextureWarmupMZ actor image warmup error:", error);
+                return false;
+            })
+            .finally(() => {
+                actor.setCharacterImage(params[1], params[2]);
+                actor.setFaceImage(params[3], params[4]);
+                actor.setBattlerImage(params[5]);
+                $gamePlayer.refresh();
+                finalizeInterpreterWarmup(this);
+            });
+
+        return true;
+    };
 })();

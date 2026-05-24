@@ -88,13 +88,30 @@ Galv.Mstyle = Galv.Mstyle || {};  // Compatibility
 
 Galv.MBG.defaultOnOff = PluginManager.parameters("GALV_MessageBackgroundMZ")["defaultStatus"] == "true";
 Galv.MBG.disable = false;
+Galv.MBG._bitmapCache = Galv.MBG._bitmapCache || {};
+
+Galv.MBG.preload = function(id) {
+	const imageID = Number(id || 0);
+	const key = 'msgimg_' + imageID;
+	let bitmap = Galv.MBG._bitmapCache[key];
+	if (!bitmap) {
+		bitmap = ImageManager.loadSystem(key);
+		Galv.MBG._bitmapCache[key] = bitmap;
+	}
+	if (bitmap && bitmap.baseTexture && bitmap.baseTexture.update) {
+		bitmap.baseTexture.update();
+	}
+	return bitmap;
+};
 
 Galv.MBG.status = function(status) {
 	$gameSystem._msgBackground.status = status;
 };
 
 Galv.MBG.id = function(id) {
-	$gameSystem._msgBackground.id = id;
+	const imageID = Number(id || 0);
+	Galv.MBG.preload(imageID);
+	$gameSystem._msgBackground.id = imageID;
 };
 	
 
@@ -229,8 +246,18 @@ Sprite_GalvMsgBg.prototype.update = function() {
 };
 
 Sprite_GalvMsgBg.prototype.loadBitmap = function() {
-	this.imageID = $gameSystem._msgBackground.id;
-    this.bitmap = ImageManager.loadSystem('msgimg_' + this.imageID);
+	this.imageID = Number($gameSystem._msgBackground.id || 0);
+	const targetID = this.imageID;
+	const bitmap = Galv.MBG.preload(targetID);
+	if (bitmap && bitmap.isReady && bitmap.isReady()) {
+		this.bitmap = bitmap;
+	} else if (bitmap && bitmap.addLoadListener) {
+		bitmap.addLoadListener(() => {
+			if (this.imageID === targetID) {
+				this.bitmap = bitmap;
+			}
+		});
+	}
 	this.x = 0
 	this.z = 10;
 	this.maxopac = 255;
