@@ -308,11 +308,30 @@
 
         const choices = state.choices || [];
         if (choices.length > 0) {
+            // Prevent ChoiceShuffle from re-randomising restored options.
+            const choiceShuffle =
+                window.CAE &&
+                window.CAE.ChoiceShuffle &&
+                typeof window.CAE.ChoiceShuffle.setShuffle === "function"
+                    ? window.CAE.ChoiceShuffle
+                    : null;
+
+            const prevShuffle =
+                choiceShuffle ? !!choiceShuffle.shuffle : null;
+
+            if (choiceShuffle) {
+                choiceShuffle.setShuffle(false);
+            }
+
             $gameMessage.setChoices(
                 choices,
                 Number(state.choiceDefaultType ?? 0),
                 Number(state.choiceCancelType ?? 0)
             );
+
+            if (choiceShuffle) {
+                choiceShuffle.setShuffle(prevShuffle);
+            }
             $gameMessage.setChoiceBackground(Number(state.choiceBackground || 0));
             $gameMessage.setChoicePositionType(Number(state.choicePositionType || 2));
         }
